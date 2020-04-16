@@ -87,6 +87,7 @@ class VaspDrone(AbstractDrone):
     def __init__(self, runs=None, parse_dos="auto", bandstructure_mode="auto",
                  parse_locpot=True, additional_fields=None, use_full_uri=True,
                  parse_bader=bader_exe_exists, parse_chgcar=False, parse_aeccar=False,
+                 parse_eigenvalues=False,
                  parse_potcar_file=True,
                  store_volumetric_data=STORE_VOLUMETRIC_DATA,
                  store_additional_json=STORE_ADDITIONAL_JSON):
@@ -128,6 +129,7 @@ class VaspDrone(AbstractDrone):
         self.store_volumetric_data = [f.lower() for f in store_volumetric_data]
         self.store_additional_json = store_additional_json
         self.parse_potcar_file = parse_potcar_file
+        self.parse_eigenvalues = parse_eigenvalues
 
         if parse_chgcar or parse_aeccar:
             warnings.warn("These options have been deprecated in favor of the 'store_volumetric_data' "
@@ -353,10 +355,11 @@ class VaspDrone(AbstractDrone):
                      "composition_reduced": "reduced_cell_formula",
                      "composition_unit_cell": "unit_cell_formula"}.items():
             d[k] = d.pop(v)
-
-        for k in ["eigenvalues", "projected_eigenvalues"]:  # large storage space breaks some docs
-            if k in d["output"]:
-                del d["output"][k]
+            
+        if not self.parse_eigenvalues:
+            for k in ["eigenvalues", "projected_eigenvalues"]:  # large storage space breaks some docs
+                if k in d["output"]:
+                    del d["output"][k]
 
         comp = Composition(d["composition_unit_cell"])
         d["formula_anonymous"] = comp.anonymized_formula
