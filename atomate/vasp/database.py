@@ -83,6 +83,7 @@ class VaspCalcDb(CalcDb):
         dos = None
         bs = None
         vol_data = {}
+        eigenvals = {}
 
         # move dos BS and CHGCAR from doc to gridfs
         if use_gridfs and "calcs_reversed" in task_doc:
@@ -94,7 +95,13 @@ class VaspCalcDb(CalcDb):
             if "bandstructure" in task_doc["calcs_reversed"][0]:  # only store idx=0 (last step)
                 bs = json.dumps(task_doc["calcs_reversed"][0]["bandstructure"], cls=MontyEncoder)
                 del task_doc["calcs_reversed"][0]["bandstructure"]
-
+                
+            for eigenvalue in ("eigenvalues", "projected_eigenvalues"):
+                if eigenvalue in task_doc["calcs_reversed"][0]["output"]:  # only store idx=0 data
+                    eigenvals[eigenvalue] = json.dumps(task_doc["calcs_reversed"][0]["output"][eigenvalue],
+                                                         cls=MontyEncoder)
+                    del task_doc["calcs_reversed"][0][eigenvalue]    
+            
             for vol_data_name in ('chgcar', 'locpot', 'aeccar0', 'aeccar1', 'aeccar2', 'elfcar'):
                 if vol_data_name in task_doc["calcs_reversed"][0]:  # only store idx=0 data
                     vol_data[vol_data_name] = json.dumps(task_doc["calcs_reversed"][0][vol_data_name],
@@ -118,7 +125,16 @@ class VaspCalcDb(CalcDb):
                 {"task_id": t_id}, {"$set": {"calcs_reversed.0.bandstructure_compression": compression_type}})
             self.collection.update_one(
                 {"task_id": t_id}, {"$set": {"calcs_reversed.0.bandstructure_fs_id": bfs_gfs_id}})
-
+            
+        # insert the EIGENVALS file into gridfs and update the task documents (by JENG)
+        if eigenvals:
+            for name, data in eigenvals.items():
+                data_gfs_id, compression_type = self.insert_gridfs(data, "{}_fs".format(name), task_id=t_id)
+                self.collection.update_one(
+                    {"task_id": t_id}, {"$set": {"calcs_reversed.0.{}_compression".format(name): compression_type}})
+                self.collection.update_one({"task_id": t_id}, {"$set": {"calcs_reversed.0.{}_fs_id".format(name): data_gfs_id}})
+            
+        
         # insert the CHGCAR file into gridfs and update the task documents
         if vol_data:
             for name, data in vol_data.items():
@@ -253,7 +269,23 @@ class VaspCalcDb(CalcDb):
             ValueError(f"The AECCAR seems to be corrupted for task_id = {task_id}")
 
         return {'aeccar0': aeccar0, 'aeccar2': aeccar2}
-
+    
+       def get_eigenvals(self, task_id):
+        m_task = self.collection.find_one({"task_id": task_id}, {"calcs_reversed": 1})
+        fs_id = m_task['calcs_reversed'][0]["output"]['eigenvalues_fs_id']
+        fs = gridfs.GridFS(self.db, 'eigenvalues_fs')
+        eigenvals_json = zlib.decompress(fs.get(fs_id).read())
+        eigenvals_dict = json.loads(eigenvals_json.decode())
+        return eigenvals_dict 
+    
+        def get_proj_eigenvals(self, task_id):
+        m_task = self.collection.find_one({"task_id": task_id}, {"calcs_reversed": 1})
+        fs_id = m_task['calcs_reversed'][0]["output"]['projected_eigenvalues_fs_id']
+        fs = gridfs.GridFS(self.db, 'projected_eigenvalues_fs')
+        proj_eigenvals_json = zlib.decompress(fs.get(fs_id).read())
+        proj_eigenvals_dict = json.loads(proj_eigenvals_json.decode())
+        return proj_eigenvals_dict
+    
     def reset(self):
         self.collection.delete_many({})
         self.db.counter.delete_one({"_id": "taskid"})
