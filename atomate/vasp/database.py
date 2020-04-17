@@ -270,7 +270,7 @@ class VaspCalcDb(CalcDb):
 
         return {'aeccar0': aeccar0, 'aeccar2': aeccar2}
     
-       def get_eigenvals(self, task_id):
+    def get_eigenvals(self, task_id):
         m_task = self.collection.find_one({"task_id": task_id}, {"calcs_reversed": 1})
         fs_id = m_task['calcs_reversed'][0]["output"]['eigenvalues_fs_id']
         fs = gridfs.GridFS(self.db, 'eigenvalues_fs')
@@ -278,7 +278,7 @@ class VaspCalcDb(CalcDb):
         eigenvals_dict = json.loads(eigenvals_json.decode())
         return eigenvals_dict 
     
-        def get_proj_eigenvals(self, task_id):
+    def get_proj_eigenvals(self, task_id):
         m_task = self.collection.find_one({"task_id": task_id}, {"calcs_reversed": 1})
         fs_id = m_task['calcs_reversed'][0]["output"]['projected_eigenvalues_fs_id']
         fs = gridfs.GridFS(self.db, 'projected_eigenvalues_fs')
