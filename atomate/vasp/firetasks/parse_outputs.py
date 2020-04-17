@@ -99,7 +99,7 @@ class VaspToDb(FiretaskBase):
                           bandstructure_mode=self.get("bandstructure_mode", False),
                           parse_chgcar=self.get("parse_chgcar", False),  # deprecated
                           parse_aeccar=self.get("parse_aeccar", False),  # deprecated
-                          parse_eigenvalues=self.get("parse_eigenvalues", False)
+                          parse_eigenvalues=self.get("parse_eigenvalues", False),
                           store_volumetric_data=self.get("store_volumetric_data", STORE_VOLUMETRIC_DATA))
 
         # assimilate (i.e., parse)
