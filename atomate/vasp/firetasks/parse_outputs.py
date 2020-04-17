@@ -80,7 +80,7 @@ class VaspToDb(FiretaskBase):
                        "additional_fields", "db_file", "fw_spec_field", "defuse_unsuccessful",
                        "task_fields_to_push", "parse_chgcar", "parse_aeccar",
                        "parse_potcar_file",
-                       "store_volumetric_data", parse_eigenvalues=self.get("parse_eigenvalues", False)]
+                       "store_volumetric_data", "parse_eigenvalues"]
 
     def run_task(self, fw_spec):
         # get the directory that contains the VASP dir to parse
