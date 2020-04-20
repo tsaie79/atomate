@@ -100,7 +100,7 @@ class VaspCalcDb(CalcDb):
                 if eigenvalue in task_doc["calcs_reversed"][0]["output"]:  # only store idx=0 data
                     eigenvals[eigenvalue] = json.dumps(task_doc["calcs_reversed"][0]["output"][eigenvalue],
                                                          cls=MontyEncoder)
-                    del task_doc["calcs_reversed"][0][eigenvalue]    
+                    del task_doc["calcs_reversed"][0]["output"][eigenvalue]    
             
             for vol_data_name in ('chgcar', 'locpot', 'aeccar0', 'aeccar1', 'aeccar2', 'elfcar'):
                 if vol_data_name in task_doc["calcs_reversed"][0]:  # only store idx=0 data
