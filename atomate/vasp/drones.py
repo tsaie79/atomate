@@ -346,7 +346,7 @@ class VaspDrone(AbstractDrone):
         """
         vasprun_file = os.path.join(dir_name, filename)
 
-        vrun = Vasprun(vasprun_file, parse_potcar_file=self.parse_potcar_file, parse_eigen=self.parse_eigenvalues, 
+        vrun = Vasprun(vasprun_file, parse_potcar_file=self.parse_potcar_file, parse_eigen=True, 
                        parse_projected_eigen=self.parse_eigenvalues)
 
         d = vrun.as_dict()
