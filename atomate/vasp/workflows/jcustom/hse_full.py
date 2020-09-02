@@ -35,7 +35,6 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos_hse, nupdowns, enc
         if gamma_only is True:
             # user_kpoints_settings = Kpoints.gamma_automatic((1,1,1), (0.333, 0.333, 0))
             user_kpoints_settings = Kpoints.gamma_automatic()
-            kpoint_setting = "G"
 
         elif gamma_only:
             nkpoints = len(gamma_only)
@@ -58,7 +57,6 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos_hse, nupdowns, enc
                     '@class': 'Kpoints'
                 }
             )
-            kpoint_setting = "k"
 
         else:
             user_kpoints_settings = None
