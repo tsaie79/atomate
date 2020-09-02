@@ -76,12 +76,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos_hse, nupdowns, enc
             db_file=DB_FILE if DB_FILE else '>>db_file<<',
             name="PBE_relax",
             max_force_threshold=False,
-            job_type="normal",
-            vasptodb_kwargs={"additional_fields": {
-                "task_label": "PBE_relax",
-                "charge_state": cs,
-                "nupdown_set": nupdown
-            }},
+            job_type="normal"
         )
 
         # FW2 Run HSE relax
