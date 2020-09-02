@@ -11,15 +11,15 @@ from fireworks import Firework, LaunchPad, Workflow
 import numpy as np
 
 
-def get_wf_full_hse(defect_st, charge_states, gamma_only, dos_hse, nupdowns, encut=520,
-               include_hse_relax=False, vasptodb=None, wf_addition_name=None):
+def get_wf_full_hse(structure, charge_states, gamma_only, dos_hse, nupdowns, encut=520,
+                    include_hse_relax=False, vasptodb=None, wf_addition_name=None):
     fws = []
     for cs, nupdown in zip(charge_states, nupdowns):
-        print("Formula: {}".format(defect_st.formula))
-        if defect_st.site_properties.get("magmom", None):
-            defect_st.remove_site_property("magmom")
-        defect_st.set_charge(cs)
-        nelect = MPRelaxSet(defect_st, use_structure_charge=True).nelect
+        print("Formula: {}".format(structure.formula))
+        if structure.site_properties.get("magmom", None):
+            structure.remove_site_property("magmom")
+        structure.set_charge(cs)
+        nelect = MPRelaxSet(structure, use_structure_charge=True).nelect
         user_incar_settings = {
             "ENCUT": encut,
             "ISIF": 2,
@@ -64,14 +64,14 @@ def get_wf_full_hse(defect_st, charge_states, gamma_only, dos_hse, nupdowns, enc
             user_kpoints_settings = None
 
         # input set for relaxation
-        vis_relax = MPRelaxSet(defect_st, force_gamma=True)
+        vis_relax = MPRelaxSet(structure, force_gamma=True)
         v = vis_relax.as_dict()
         v.update({"user_incar_settings": user_incar_settings, "user_kpoints_settings": user_kpoints_settings})
         vis_relax = vis_relax.__class__.from_dict(v)
 
         # FW1 Structure optimization firework
         opt = OptimizeFW(
-            structure=defect_st,
+            structure=structure,
             vasp_input_set=vis_relax,
             db_file=DB_FILE if DB_FILE else '>>db_file<<',
             name="PBE_relax",
@@ -86,7 +86,7 @@ def get_wf_full_hse(defect_st, charge_states, gamma_only, dos_hse, nupdowns, enc
 
         # FW2 Run HSE relax
         hse_relax = HSERelaxFW(
-            structure=defect_st,
+            structure=structure,
             vasp_input_set_params={
                 "user_incar_settings": user_incar_settings,
                 "user_kpoints_settings": user_kpoints_settings
@@ -127,7 +127,7 @@ def get_wf_full_hse(defect_st, charge_states, gamma_only, dos_hse, nupdowns, enc
             parent_hse_scf = hse_relax
         else:
             parent_hse_scf = opt
-        scf = HSEStaticFW(defect_st,
+        scf = HSEStaticFW(structure,
                           vasp_input_set_params=uis_hse_scf,
                           parents=parent_hse_scf,
                           name="HSE_scf",
@@ -140,13 +140,12 @@ def get_wf_full_hse(defect_st, charge_states, gamma_only, dos_hse, nupdowns, enc
         if include_hse_relax:
             fws.append(hse_relax)
         fws.append(scf)
-    wf_name = "{}:{}:q{}:sp{}".format(defect_st.composition.reduced_formula, wf_addition_name,
+    wf_name = "{}:{}:q{}:sp{}".format(structure.composition.reduced_formula, wf_addition_name,
                                       charge_states, nupdowns)
     wf = Workflow(fws, name=wf_name)
     vasptodb.update({"wf": [fw.name for fw in wf.fws]})
     wf = add_additional_fields_to_taskdocs(wf, vasptodb)
     wf = add_namefile(wf)
     wf = add_modify_incar(wf)
-    magmom = MPRelaxSet(defect_st).incar.get("MAGMOM", None)
-    wf = add_modify_incar(wf, {"incar_update": {"MAGMOM": magmom}})
     return wf
+

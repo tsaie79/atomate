@@ -67,7 +67,8 @@ class HSEStaticFW(Firework):
         t.append(WriteVaspHSEBSFromPrev(mode="uniform", reciprocal_density=None, kpoints_line_density=None))
         t.append(RmSelectiveDynPoscar())
 
-        if MPRelaxSet(structure).incar.get("MAGMOM", None):
+        magmom = MPRelaxSet(structure).incar.get("MAGMOM", None)
+        if magmom:
             t.append(ModifyIncar(incar_update={"MAGMOM": magmom}))
 
         if vasp_input_set_params.get("user_incar_settings", {}):
@@ -86,10 +87,11 @@ class HSEStaticFW(Firework):
 
 
 class HSERelaxFW(Firework):
-    def __init__(self, structure=None, name="HSE_relax", vasp_input_set_params={},
+    def __init__(self, structure=None, name="HSE_relax", vasp_input_set_params=None,
                  vasp_cmd=VASP_CMD, db_file=DB_FILE, vasptodb_kwargs=None,
                  parents=None, wall_time=None, force_gamma=True, **kwargs):
         t = []
+        vasp_input_set_params = vasp_input_set_params or {}
         vasptodb_kwargs = vasptodb_kwargs or {}
         if "additional_fields" not in vasptodb_kwargs:
             vasptodb_kwargs["additional_fields"] = {}
@@ -105,11 +107,13 @@ class HSERelaxFW(Firework):
         hse_relax_vis_incar = MPHSERelaxSet(structure=structure).incar
         t.append(ModifyIncar(incar_update=hse_relax_vis_incar))
 
-        if MPRelaxSet(structure).incar.get("MAGMOM", None):
+        magmom = MPRelaxSet(structure).incar.get("MAGMOM", None)
+        if magmom:
             t.append(ModifyIncar(incar_update={"MAGMOM": magmom}))
             
         if vasp_input_set_params.get("user_incar_settings", {}):
             t.append(ModifyIncar(incar_update=vasp_input_set_params.get("user_incar_settings", {})))
+
         if vasp_input_set_params.get("user_kpoints_settings", {}):
             t.append(WriteVaspFromPMGObjects(kpoints=vasp_input_set_params.get("user_kpoints_settings", {})))
         else:
