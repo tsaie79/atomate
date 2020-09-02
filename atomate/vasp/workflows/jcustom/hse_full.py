@@ -11,7 +11,7 @@ from fireworks import Firework, LaunchPad, Workflow
 import numpy as np
 
 
-def hse_scf_wf(defect_st, charge_states, gamma_only, dos_hse, nupdowns, encut=520,
+def get_wf_full_hse(defect_st, charge_states, gamma_only, dos_hse, nupdowns, encut=520,
                include_hse_relax=False, vasptodb=None, wf_addition_name=None):
     fws = []
     for cs, nupdown in zip(charge_states, nupdowns):
