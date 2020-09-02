@@ -21,18 +21,12 @@ def hse_scf_wf(defect_st, charge_states, gamma_only, dos_hse, nupdowns, encut=52
         defect_st.set_charge(cs)
         nelect = MPRelaxSet(defect_st, use_structure_charge=True).nelect
         user_incar_settings = {
-            "NELM": 150,
             "ENCUT": encut,
             "ISIF": 2,
             "ISMEAR": 0,
             "EDIFFG": -0.01,
-            "EDIFF": 1E-4,
-            "NELMIN": 6,
-            "LWAVE": False,
             "LCHARG": False,
-            "ISPIN": 2,
             "NUPDOWN": nupdown,
-            "LASPH":True
             #"NCORE": 4 owls normal 14; cori 8. Reduce ncore if want to increase speed but low memory risk
         }
 
@@ -42,7 +36,8 @@ def hse_scf_wf(defect_st, charge_states, gamma_only, dos_hse, nupdowns, encut=52
             # user_kpoints_settings = Kpoints.gamma_automatic((1,1,1), (0.333, 0.333, 0))
             user_kpoints_settings = Kpoints.gamma_automatic()
             kpoint_setting = "G"
-        else:
+
+        elif gamma_only:
             nkpoints = len(gamma_only)
             kpts_weights = [1.0 for i in np.arange(nkpoints)]
             labels = [None for i in np.arange(nkpoints)]
@@ -65,12 +60,14 @@ def hse_scf_wf(defect_st, charge_states, gamma_only, dos_hse, nupdowns, encut=52
             )
             kpoint_setting = "k"
 
+        else:
+            user_kpoints_settings = None
+
         # input set for relaxation
         vis_relax = MPRelaxSet(defect_st, force_gamma=True)
-        if user_kpoints_settings:
-            v = vis_relax.as_dict()
-            v.update({"user_incar_settings": user_incar_settings, "user_kpoints_settings": user_kpoints_settings})
-            vis_relax = vis_relax.__class__.from_dict(v)
+        v = vis_relax.as_dict()
+        v.update({"user_incar_settings": user_incar_settings, "user_kpoints_settings": user_kpoints_settings})
+        vis_relax = vis_relax.__class__.from_dict(v)
 
         # FW1 Structure optimization firework
         opt = OptimizeFW(
@@ -105,23 +102,18 @@ def hse_scf_wf(defect_st, charge_states, gamma_only, dos_hse, nupdowns, encut=52
         # FW3 Run HSE SCF
         uis_hse_scf = {
             "user_incar_settings": {
-                "LEPSILON": False,
                 "LVHAR": True,
                 # "AMIX": 0.2,
                 # "AMIX_MAG": 0.8,
                 # "BMIX": 0.0001,
                 # "BMIX_MAG": 0.0001,
-                "EDIFF": 1.e-05,
+                "EDIFF": 1.0e-05,
                 "ENCUT": encut,
                 "ISMEAR": 0,
-                "ICHARG": 1,
-                "LWAVE": False,
                 "LCHARG": False,
                 "NSW": 0,
                 "NUPDOWN": nupdown,
                 "NELM": 150,
-                "LASPH":True
-                #"NCORE": 4
             },
             "user_kpoints_settings": user_kpoints_settings
         }
