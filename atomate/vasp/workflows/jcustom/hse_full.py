@@ -133,8 +133,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos_hse, nupdowns, enc
         if include_hse_relax:
             fws.append(hse_relax)
         fws.append(scf)
-    wf_name = "{}:{}:q{}:sp{}".format(structure.composition.reduced_formula, wf_addition_name,
-                                      charge_states, nupdowns)
+    wf_name = "{}:{}:q{}:sp{}".format("".join(structure.formula.split(" ")), wf_addition_name, charge_states, nupdowns)
     wf = Workflow(fws, name=wf_name)
     vasptodb.update({"wf": [fw.name for fw in wf.fws]})
     wf = add_additional_fields_to_taskdocs(wf, vasptodb)
