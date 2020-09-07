@@ -173,7 +173,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
             labels = [None for i in np.arange(nkpoints)]
             user_kpoints_settings = Kpoints.from_dict(
                 {
-                    'comment': 'Automatic kpoint scheme',
+                    'comment': 'JCustom',
                     'nkpoints': nkpoints,
                     'generation_style': 'Reciprocal',
                     'kpoints': gamma_only,
