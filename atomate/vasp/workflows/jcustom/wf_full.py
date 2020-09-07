@@ -229,7 +229,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
 
         scan_scf = StaticFW(
             structure=structure,
-            vasp_input_set_params=uis_scxan_scf,
+            vasp_input_set_params=uis_scan_scf,
             parents=scan_opt,
             name="HSE_scf",
             vasptodb_kwargs={"additional_fields": {
