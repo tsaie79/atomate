@@ -210,7 +210,6 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
                 # "BMIX": 0.0001,
                 # "BMIX_MAG": 0.0001,
                 "ENCUT": encut,
-                "LMIXTAU":True,
                 # "ISMEAR": 0,
                 "LCHARG": False,
                 "NUPDOWN": nupdown,
@@ -228,7 +227,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
             vasp_input_set_params=uis_scan_scf,
             parents=scan_opt,
             name="SCAN_scf",
-            SCAN=True,
+            has_KPOINTS=False,
             vasptodb_kwargs={"additional_fields": {
                 "task_type": "MPScanStaticSet",
                 "charge_state": cs,
