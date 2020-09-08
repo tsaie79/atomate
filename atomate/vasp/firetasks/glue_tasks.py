@@ -61,7 +61,7 @@ class CopyVaspOutputs(CopyFiles):
     """
 
     optional_params = ["calc_loc", "calc_dir", "filesystem", "additional_files",
-                       "contcar_to_poscar"]
+                       "contcar_to_poscar", "SCAN"]
 
     def run_task(self, fw_spec):
 
@@ -74,6 +74,8 @@ class CopyVaspOutputs(CopyFiles):
         if not "$ALL" in self.get("additional_files", []):
             files_to_copy = ['INCAR', 'POSCAR', 'KPOINTS', 'POTCAR', 'OUTCAR',
                              'vasprun.xml']
+            if self.get("SCAN"):
+                files_to_copy.remove("KPOINTS")
             if self.get("additional_files"):
                 files_to_copy.extend(self["additional_files"])
 
