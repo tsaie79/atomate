@@ -241,7 +241,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
     wf = Workflow(fws, name=wf_name)
     vasptodb.update({"wf": [fw.name for fw in wf.fws]})
     wf = add_additional_fields_to_taskdocs(wf, vasptodb)
-    wf = add_modify_incar(wf, {"MAGMOM": MPRelaxSet(structure).incar.get("MAGMOM", None)})
+    wf = add_modify_incar(wf, {"incar_update": {"MAGMOM": MPRelaxSet(structure).incar.get("MAGMOM", None)}})
     wf = add_namefile(wf)
     wf = add_modify_incar(wf)
     return wf
