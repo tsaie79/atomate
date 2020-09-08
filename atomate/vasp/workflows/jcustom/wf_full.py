@@ -1,4 +1,4 @@
-from pymatgen.io.vasp.sets import MPRelaxSet, MPStaticSet, MPHSERelaxSet, MPHSEBSSet
+from pymatgen.io.vasp.sets import MPScanStaticSet
 from pymatgen.io.vasp.inputs import Structure, Kpoints, Poscar
 
 from atomate.vasp.fireworks.core import OptimizeFW, StaticFW, ScanOptimizeFW
@@ -155,7 +155,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
         user_incar_settings = {
             "ENCUT": encut,
             "ISIF": 2,
-            "ISMEAR": 0,
+            # "ISMEAR": 0,
             "EDIFFG": -0.01,
             "LCHARG": False,
             "NUPDOWN": nupdown,
@@ -203,24 +203,21 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
         )
 
         # FW2 Run SCAN SCF
+        scan_scf_vis = MPScanStaticSet(structure).incar.as_dict()
         uis_scan_scf = {
             "user_incar_settings": {
-                "LVHAR": True,
                 # "AMIX": 0.2,
                 # "AMIX_MAG": 0.8,
                 # "BMIX": 0.0001,
                 # "BMIX_MAG": 0.0001,
-                "EDIFF": 1.0e-05,
                 "ENCUT": encut,
-                "ISMEAR": 0,
+                # "ISMEAR": 0,
                 "LCHARG": False,
-                "NSW": 0,
                 "NUPDOWN": nupdown,
-                "NELM": 150,
-                "MAGMOM": MPRelaxSet(structure).incar.get("MAGMOM", None)
             },
             "user_kpoints_settings": user_kpoints_settings
         }
+        uis_scan_scf["user_incar_settings"].update(scan_scf_vis)
 
         if dos_hse:
             uis_scan_scf["user_incar_settings"].update({"ENMAX": 10, "ENMIN": -10, "NEDOS": 9000})
@@ -231,9 +228,9 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
             structure=structure,
             vasp_input_set_params=uis_scan_scf,
             parents=scan_opt,
-            name="HSE_scf",
+            name="SCAN_scf",
             vasptodb_kwargs={"additional_fields": {
-                "task_type": "HSEStaticFW",
+                "task_type": "MPScanStaticSet",
                 "charge_state": cs,
                 "nupdown_set": nupdown
             }})
@@ -244,6 +241,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
     wf = Workflow(fws, name=wf_name)
     vasptodb.update({"wf": [fw.name for fw in wf.fws]})
     wf = add_additional_fields_to_taskdocs(wf, vasptodb)
+    wf = add_modify_incar(wf, {"MAGMOM": MPRelaxSet(structure).incar.get("MAGMOM", None)})
     wf = add_namefile(wf)
     wf = add_modify_incar(wf)
     return wf
