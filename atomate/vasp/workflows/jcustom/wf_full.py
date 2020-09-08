@@ -203,7 +203,6 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
         )
 
         # FW2 Run SCAN SCF
-        scan_scf_vis = MPScanStaticSet(structure).incar.as_dict()
         uis_scan_scf = {
             "user_incar_settings": {
                 # "AMIX": 0.2,
@@ -211,28 +210,29 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
                 # "BMIX": 0.0001,
                 # "BMIX_MAG": 0.0001,
                 "ENCUT": encut,
+                "LMIXTAU":True,
                 # "ISMEAR": 0,
                 "LCHARG": False,
                 "NUPDOWN": nupdown,
             },
             "user_kpoints_settings": user_kpoints_settings
         }
-        uis_scan_scf["user_incar_settings"].update(scan_scf_vis)
 
         if dos_hse:
             uis_scan_scf["user_incar_settings"].update({"ENMAX": 10, "ENMIN": -10, "NEDOS": 9000})
 
         uis_scan_scf["user_incar_settings"].update({"NELECT": nelect})
 
-        scan_scf = StaticFW(
+        scan_scf = ScanStaticFW(
             structure=structure,
             vasp_input_set_params=uis_scan_scf,
             parents=scan_opt,
             name="SCAN_scf",
+            SCAN=True,
             vasptodb_kwargs={"additional_fields": {
                 "task_type": "MPScanStaticSet",
                 "charge_state": cs,
-                "nupdown_set": nupdown
+                "nupdown_set": nupdown,
             }})
         fws.append(scan_opt)
         fws.append(scan_scf)

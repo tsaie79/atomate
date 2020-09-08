@@ -29,7 +29,8 @@ from pymatgen.io.vasp.sets import (
     MPSOCSet,
     MPHSEBSSet,
     MPNMRSet,
-    MPScanRelaxSet
+    MPScanRelaxSet,
+    MPScanStaticSet
 )
 
 from atomate.utils.utils import env_chk, load_class
@@ -345,7 +346,7 @@ class WriteVaspStaticFromPrev(FiretaskBase):
         "international_monoclinic",
         "lepsilon",
         "other_params",
-        "potcar_spec",
+        "potcar_spec"
     ]
 
     def run_task(self, fw_spec):
