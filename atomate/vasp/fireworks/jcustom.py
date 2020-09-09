@@ -139,7 +139,6 @@ class JScanStaticFW(Firework):
             db_file=DB_FILE,
             vasptodb_kwargs=None,
             parents=None,
-            has_KPOINTS=False,
             **kwargs
     ):
         """
@@ -177,13 +176,13 @@ class JScanStaticFW(Firework):
 
         if prev_calc_dir:
             t.append(CopyVaspOutputs(calc_dir=prev_calc_dir, contcar_to_poscar=True))
-            t.append(JWriteScanVaspStaticFromPrev(other_params=vasp_input_set_params, has_KPOINTS=has_KPOINTS))
+            t.append(JWriteScanVaspStaticFromPrev(other_params=vasp_input_set_params))
         elif parents:
             if prev_calc_loc:
                 t.append(
                     CopyVaspOutputs(calc_loc=prev_calc_loc, contcar_to_poscar=True)
                 )
-            t.append(JWriteScanVaspStaticFromPrev(other_params=vasp_input_set_params, has_KPOINTS=has_KPOINTS))
+            t.append(JWriteScanVaspStaticFromPrev(other_params=vasp_input_set_params))
         elif structure:
             vasp_input_set = vasp_input_set or MPScanStaticSet(
                 structure, **vasp_input_set_params
