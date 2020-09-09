@@ -207,6 +207,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
         # FW2 Run SCAN SCF
         uis_scan_scf = {
             "user_incar_settings": {
+                "LAECHG": False,
                 "EDIFF": 1e-05,
                 "ENCUT": encut,
                 "ISMEAR": 0,
