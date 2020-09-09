@@ -193,12 +193,14 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
             user_kpoints_settings = None
 
         # FW1 Structure optimization firework
-        scan_opt = ScanOptimizeFW(
+        scan_opt = JScanOptimizeFW(
             structure=structure,
             override_default_vasp_params={
-                "user_incar_settings":user_incar_settings,
-                "user_kpoints_settings":user_kpoints_settings
+                "user_incar_settings": user_incar_settings,
+                "user_kpoints_settings": user_kpoints_settings
             },
+            job_type="Normal",
+            max_force_threshold=False,
             name="SCAN_relax"
         )
 
