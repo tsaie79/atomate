@@ -8,6 +8,7 @@ from pymatgen.io.vasp.sets import (
     MPHSERelaxSet,
     MPScanStaticSet,
     MPScanRelaxSet,
+    MVLScanRelaxSet,
     MITMDSet,
     MITRelaxSet,
     MPStaticSet,
@@ -50,7 +51,7 @@ from atomate.vasp.firetasks.write_inputs import (
 )
 from atomate.vasp.firetasks.neb_tasks import WriteNEBFromImages, WriteNEBFromEndpoints
 from atomate.vasp.firetasks.jcustom import RmSelectiveDynPoscar, SelectiveDynmaicPoscar, \
-    JWriteScanVaspStaticFromPrev, JCopyScanVaspOutputs
+    JWriteScanVaspStaticFromPrev
 from atomate.vasp.config import VASP_CMD, DB_FILE
 
 
@@ -94,10 +95,10 @@ class JScanOptimizeFW(Firework):
             \*\*kwargs: Other kwargs that are passed to Firework.__init__.
         """
         override_default_vasp_params = override_default_vasp_params or {}
-        vasp_input_set = vasp_input_set or MPScanRelaxSet(
-            structure, force_gamma=force_gamma, bandgap=1, **override_default_vasp_params
+        vasp_input_set = vasp_input_set or MVLScanRelaxSet(
+            structure, force_gamma=force_gamma, **override_default_vasp_params
         )
-        vasp_input_set.incar.pop("KSPACING")
+
         if vasp_input_set.incar["ISIF"] in (0, 1, 2, 7) and job_type == "double_relaxation":
             warnings.warn(
                 "A double relaxation run might not be appropriate with ISIF {}".format(
@@ -175,12 +176,12 @@ class JScanStaticFW(Firework):
         )
 
         if prev_calc_dir:
-            t.append(JCopyScanVaspOutputs(calc_dir=prev_calc_dir, has_KPOINTS=has_KPOINTS, contcar_to_poscar=True))
+            t.append(CopyVaspOutputs(calc_dir=prev_calc_dir, contcar_to_poscar=True))
             t.append(JWriteScanVaspStaticFromPrev(other_params=vasp_input_set_params, has_KPOINTS=has_KPOINTS))
         elif parents:
             if prev_calc_loc:
                 t.append(
-                    JCopyScanVaspOutputs(calc_loc=prev_calc_loc, has_KPOINTS=has_KPOINTS, contcar_to_poscar=True)
+                    CopyVaspOutputs(calc_loc=prev_calc_loc, contcar_to_poscar=True)
                 )
             t.append(JWriteScanVaspStaticFromPrev(other_params=vasp_input_set_params, has_KPOINTS=has_KPOINTS))
         elif structure:
