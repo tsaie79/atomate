@@ -211,6 +211,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
                 # "AMIX_MAG": 0.8,
                 # "BMIX": 0.0001,
                 # "BMIX_MAG": 0.0001,
+                "EDIFF": 1e-05,
                 "ENCUT": encut,
                 "ISMEAR": 0,
                 "LCHARG": False,

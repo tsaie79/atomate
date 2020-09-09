@@ -130,7 +130,7 @@ class JScanStaticFW(Firework):
     def __init__(
             self,
             structure=None,
-            name="J Scan static",
+            name="JScan static",
             vasp_input_set=None,
             vasp_input_set_params=None,
             vasp_cmd=VASP_CMD,
@@ -197,14 +197,6 @@ class JScanStaticFW(Firework):
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
         super(JScanStaticFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
-
-
-
-
-
-
-
-
 
 
 class HSEStaticFW(Firework):
