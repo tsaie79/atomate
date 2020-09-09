@@ -85,7 +85,6 @@ class JWriteScanVaspStaticFromPrev(FiretaskBase):
             "LMIXTAU": True,
             "METAGGA": "SCAN",
             "NELM": 200,
-            "EDIFF": 1E-5
         }
         other_params["user_incar_settings"].update(updates)
 
