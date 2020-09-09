@@ -227,7 +227,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
             vasp_input_set_params=uis_scan_scf,
             parents=scan_opt,
             name="SCAN_scf",
-            has_KPOINTS=has_KPOINTS,
+            has_KPOINTS=True if gamma_only else has_KPOINTS,
             vasptodb_kwargs={"additional_fields": {
                 "task_type": "MPScanStaticSet",
                 "charge_state": cs,
