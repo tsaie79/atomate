@@ -143,7 +143,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos_hse, nupdowns, enc
     return wf
 
 
-def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, encut=520,
+def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, encut=520, has_KPOINTS=False,
                      vasptodb=None, wf_addition_name=None):
     fws = []
     for cs, nupdown in zip(charge_states, nupdowns):
@@ -165,7 +165,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
 
         if gamma_only is True:
             # user_kpoints_settings = Kpoints.gamma_automatic((1,1,1), (0.333, 0.333, 0))
-            user_kpoints_settings = Kpoints.gamma_automatic()
+            user_kpoints_settings = MPRelaxSet(structure).kpoints
 
         elif gamma_only:
             nkpoints = len(gamma_only)
@@ -227,7 +227,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
             vasp_input_set_params=uis_scan_scf,
             parents=scan_opt,
             name="SCAN_scf",
-            has_KPOINTS=False,
+            has_KPOINTS=has_KPOINTS,
             vasptodb_kwargs={"additional_fields": {
                 "task_type": "MPScanStaticSet",
                 "charge_state": cs,
