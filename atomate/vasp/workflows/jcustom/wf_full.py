@@ -199,7 +199,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
                 "user_incar_settings": user_incar_settings,
                 "user_kpoints_settings": user_kpoints_settings
             },
-            job_type="Normal",
+            job_type="normal",
             max_force_threshold=False,
             name="SCAN_relax"
         )
