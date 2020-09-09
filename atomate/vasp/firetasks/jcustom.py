@@ -84,11 +84,10 @@ class JWriteScanVaspStaticFromPrev(FiretaskBase):
             "LDAU": False,
             "LMIXTAU": True,
             "METAGGA": "SCAN",
-            "NELM": 200
+            "NELM": 200,
+            "EDIFF": 1E-5
         }
-        print(other_params)
         other_params["user_incar_settings"].update(updates)
-        print(other_params)
 
         vis = MPStaticSet.from_prev_calc(
             prev_calc_dir=self.get("prev_calc_dir", "."),
