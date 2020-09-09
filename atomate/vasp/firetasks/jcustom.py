@@ -88,7 +88,8 @@ class JWriteScanVaspStaticFromPrev(FiretaskBase):
         }
         print(other_params)
         other_params["user_incar_settings"].update(updates)
-        print("o!"*50)
+        print(other_params)
+
         vis = MPStaticSet.from_prev_calc(
             prev_calc_dir=self.get("prev_calc_dir", "."),
             reciprocal_density=self.get(
