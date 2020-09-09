@@ -86,9 +86,9 @@ class JWriteScanVaspStaticFromPrev(FiretaskBase):
             "METAGGA": "SCAN",
             "NELM": 200
         }
-
+        print(other_params)
         other_params["user_incar_settings"].update(updates)
-
+        print(other_params)
         vis = MPStaticSet.from_prev_calc(
             prev_calc_dir=self.get("prev_calc_dir", "."),
             reciprocal_density=self.get(
