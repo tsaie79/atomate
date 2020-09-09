@@ -50,7 +50,7 @@ from atomate.vasp.firetasks.write_inputs import (
 )
 from atomate.vasp.firetasks.neb_tasks import WriteNEBFromImages, WriteNEBFromEndpoints
 from atomate.vasp.firetasks.jcustom import RmSelectiveDynPoscar, SelectiveDynmaicPoscar, \
-    WriteScanVaspStaticFromPrev, CopyScanVaspOutputs
+    JWriteScanVaspStaticFromPrev, JCopyScanVaspOutputs
 from atomate.vasp.config import VASP_CMD, DB_FILE
 
 
@@ -125,13 +125,11 @@ class JScanOptimizeFW(Firework):
         )
 
 
-
-
-class ScanStaticFW(Firework):
+class JScanStaticFW(Firework):
     def __init__(
             self,
             structure=None,
-            name="ScanStatic",
+            name="J Scan static",
             vasp_input_set=None,
             vasp_input_set_params=None,
             vasp_cmd=VASP_CMD,
@@ -177,14 +175,14 @@ class ScanStaticFW(Firework):
         )
 
         if prev_calc_dir:
-            t.append(CopyScanVaspOutputs(calc_dir=prev_calc_dir, has_KPOINTS=has_KPOINTS, contcar_to_poscar=True))
-            t.append(WriteScanVaspStaticFromPrev(other_params=vasp_input_set_params))
+            t.append(JCopyScanVaspOutputs(calc_dir=prev_calc_dir, has_KPOINTS=has_KPOINTS, contcar_to_poscar=True))
+            t.append(JWriteScanVaspStaticFromPrev(other_params=vasp_input_set_params, has_KPOINTS=has_KPOINTS))
         elif parents:
             if prev_calc_loc:
                 t.append(
-                    CopyScanVaspOutputs(calc_loc=prev_calc_loc, has_KPOINTS=has_KPOINTS, contcar_to_poscar=True)
+                    JCopyScanVaspOutputs(calc_loc=prev_calc_loc, has_KPOINTS=has_KPOINTS, contcar_to_poscar=True)
                 )
-            t.append(WriteScanVaspStaticFromPrev(other_params=vasp_input_set_params))
+            t.append(JWriteScanVaspStaticFromPrev(other_params=vasp_input_set_params, has_KPOINTS=has_KPOINTS))
         elif structure:
             vasp_input_set = vasp_input_set or MPScanStaticSet(
                 structure, **vasp_input_set_params
@@ -198,7 +196,7 @@ class ScanStaticFW(Firework):
         t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<"))
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
-        super(ScanStaticFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
+        super(JScanStaticFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
 
 
 

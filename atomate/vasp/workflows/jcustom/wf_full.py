@@ -224,7 +224,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
 
         uis_scan_scf["user_incar_settings"].update({"NELECT": nelect})
 
-        scan_scf = ScanStaticFW(
+        scan_scf = JScanStaticFW(
             structure=structure,
             vasp_input_set_params=uis_scan_scf,
             parents=scan_opt,

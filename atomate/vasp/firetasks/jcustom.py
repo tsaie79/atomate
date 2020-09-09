@@ -34,7 +34,7 @@ class SelectiveDynmaicPoscar(FiretaskBase):
 
 
 @explicit_serialize
-class WriteScanVaspStaticFromPrev(FiretaskBase):
+class JWriteScanVaspStaticFromPrev(FiretaskBase):
     """
     Writes input files for a static run. Assumes that output files from a
     previous (e.g., optimization) run can be accessed in current dir or
@@ -58,7 +58,8 @@ class WriteScanVaspStaticFromPrev(FiretaskBase):
         "international_monoclinic",
         "lepsilon",
         "other_params",
-        "potcar_spec"
+        "potcar_spec",
+        "has_KPOINTS"
     ]
 
     def run_task(self, fw_spec):
@@ -81,6 +82,9 @@ class WriteScanVaspStaticFromPrev(FiretaskBase):
             other_params["user_incar_settings"]["LMIXTAU"] = True
             other_params["user_incar_settings"]["LREAL"] = "Auto"
 
+            if self.get("has_KPOINTS", True):
+                other_params["user_incar_settings"].pop("KSPACING")
+
         vis = MPScanStaticSet.from_prev_calc(
             prev_calc_dir=self.get("prev_calc_dir", "."),
             reciprocal_density=self.get(
@@ -101,7 +105,7 @@ class WriteScanVaspStaticFromPrev(FiretaskBase):
 
 
 @explicit_serialize
-class CopyScanVaspOutputs(CopyFiles):
+class JCopyScanVaspOutputs(CopyFiles):
     """
     Copy files from a previous VASP run directory to the current directory.
     By default, copies 'INCAR', 'POSCAR' (default: via 'CONTCAR'), 'KPOINTS',
