@@ -1,4 +1,4 @@
-from pymatgen.io.vasp.sets import MPScanStaticSet
+from pymatgen.io.vasp.sets import MPScanStaticSet, MPRelaxSet
 from pymatgen.io.vasp.inputs import Structure, Kpoints, Poscar
 
 from atomate.vasp.fireworks.core import OptimizeFW, StaticFW, ScanOptimizeFW
