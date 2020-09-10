@@ -164,8 +164,8 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
         user_incar_settings.update({"NELECT": nelect})
 
         if gamma_only is True:
-            # user_kpoints_settings = Kpoints.gamma_automatic((1,1,1), (0.333, 0.333, 0))
-            user_kpoints_settings = MPRelaxSet(structure).kpoints
+            user_kpoints_settings = Kpoints.gamma_automatic()
+            # user_kpoints_settings = MPRelaxSet(structure).kpoints
 
         elif gamma_only:
             nkpoints = len(gamma_only)
