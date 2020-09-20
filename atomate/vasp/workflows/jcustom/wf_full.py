@@ -218,7 +218,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
         }
 
         if dos_hse:
-            uis_scan_scf["user_incar_settings"].update({"ENMAX": 10, "ENMIN": -10, "NEDOS": 9000})
+            uis_scan_scf["user_incar_settings"].update({"EMAX": 10, "EMIN": -10, "NEDOS": 9000})
 
         uis_scan_scf["user_incar_settings"].update({"NELECT": nelect})
 
