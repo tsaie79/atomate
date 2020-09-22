@@ -212,7 +212,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
                 "EDIFF": 1e-05,
                 "ENCUT": encut,
                 "ISMEAR": 0,
-                "SIGMA": 0.01,
+                "SIGMA": 0.005,
                 "LCHARG": False,
                 "NUPDOWN": nupdown,
             },
