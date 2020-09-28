@@ -158,7 +158,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, encut=
             "ENCUT": encut,
             "ISIF": 2,
             "ISMEAR": 0,
-            "SIGMA": 0.005,
+            "SIGMA": 0.001,
             "EDIFFG": -0.01,
             "LCHARG": False,
             "NUPDOWN": nupdown,
