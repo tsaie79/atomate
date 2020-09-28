@@ -27,7 +27,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, encut=5
             "EDIFFG": -0.01,
             "LCHARG": False,
             "NUPDOWN": nupdown,
-            "SIGMA": 0.01
+            "SIGMA": 0.005
             #"NCORE": 4 owls normal 14; cori 8. Reduce ncore if want to increase speed but low memory risk
         }
 
@@ -108,7 +108,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, encut=5
                 "NSW": 0,
                 "NUPDOWN": nupdown,
                 "NELM": 150,
-                "SIGMA": 0.01
+                "SIGMA": 0.005
             },
             "user_kpoints_settings": user_kpoints_settings
         }
