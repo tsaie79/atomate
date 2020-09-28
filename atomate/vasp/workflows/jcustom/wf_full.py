@@ -11,7 +11,7 @@ from fireworks import Firework, LaunchPad, Workflow
 import numpy as np
 
 
-def get_wf_full_hse(structure, charge_states, gamma_only, dos_hse, nupdowns, encut=520,
+def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, encut=520,
                     include_hse_relax=False, vasptodb=None, wf_addition_name=None):
     fws = []
     for cs, nupdown in zip(charge_states, nupdowns):
@@ -113,7 +113,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos_hse, nupdowns, enc
             "user_kpoints_settings": user_kpoints_settings
         }
 
-        if dos_hse:
+        if dos:
             uis_hse_scf["user_incar_settings"].update({"ENMAX": 10, "ENMIN": -10, "NEDOS": 9000})
 
         uis_hse_scf["user_incar_settings"].update({"NELECT": nelect})
@@ -145,7 +145,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos_hse, nupdowns, enc
     return wf
 
 
-def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, encut=520,
+def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, encut=520,
                      vasptodb=None, wf_addition_name=None):
     fws = []
     for cs, nupdown in zip(charge_states, nupdowns):
@@ -220,7 +220,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos_hse, nupdowns, en
             "user_kpoints_settings": user_kpoints_settings
         }
 
-        if dos_hse:
+        if dos:
             uis_scan_scf["user_incar_settings"].update({"EMAX": 10, "EMIN": -10, "NEDOS": 9000})
 
         uis_scan_scf["user_incar_settings"].update({"NELECT": nelect})
