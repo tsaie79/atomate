@@ -150,7 +150,7 @@ class JMVLGWFW(Firework):
 
         t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<", handler_group="no_handler"))
         t.append(PassCalcLocs(name=name))
-        t.append(VaspToDb(db_file=db_file, defuse_unsuccessful=True, **vasptodb_kwargs))
+        # t.append(VaspToDb(db_file=db_file, defuse_unsuccessful=True, **vasptodb_kwargs))
         super(JMVLGWFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
 
 
