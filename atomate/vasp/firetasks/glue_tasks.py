@@ -99,38 +99,71 @@ class CopyVaspOutputs(CopyFiles):
             prev_path_full = os.path.join(self.from_dir, f)
             dest_fname = 'POSCAR' if f == 'CONTCAR' and self.get(
                 "contcar_to_poscar", True) else f
+
             dest_path = os.path.join(self.to_dir, dest_fname)
 
-            relax_ext = ""
-            relax_paths = sorted(
-                self.fileclient.glob(prev_path_full + ".relax*"))
-            if relax_paths:
-                if len(relax_paths) > 9:
-                    raise ValueError(
-                        "CopyVaspOutputs doesn't properly handle >9 relaxations!")
-                m = re.search('\.relax\d*', relax_paths[-1])
-                relax_ext = m.group(0)
+            if f == "WFULL":
+                wfull_paths = sorted(self.fileclient.glob(prev_path_full + "*.tmp*"))
+                for wfull_path in wfull_paths:
+                    wfull_ext = wfull_path.split("/")[-1].split("WFULL")[-1]
+                    # detect .gz extension if needed - note that monty zpath() did not seem useful here
+                    gz_ext = ""
+                    if not (f + wfull_ext) in all_files:
+                        for possible_ext in [".gz", ".GZ"]:
+                            if (f + wfull_ext + possible_ext) in all_files:
+                                gz_ext = possible_ext
 
-            # detect .gz extension if needed - note that monty zpath() did not seem useful here
-            gz_ext = ""
-            if not (f + relax_ext) in all_files:
-                for possible_ext in [".gz", ".GZ"]:
-                    if (f + relax_ext + possible_ext) in all_files:
-                        gz_ext = possible_ext
+                    if not (f + wfull_ext + gz_ext) in all_files:
+                        raise ValueError("Cannot find file: {}".format(f))
 
-            if not (f + relax_ext + gz_ext) in all_files:
-                raise ValueError("Cannot find file: {}".format(f))
+                    # copy the file (minus the relaxation extension)
+                    self.fileclient.copy(prev_path_full + wfull_ext + gz_ext,
+                                         dest_path + wfull_ext + gz_ext)
 
-            # copy the file (minus the relaxation extension)
-            self.fileclient.copy(prev_path_full + relax_ext + gz_ext,
-                                 dest_path + gz_ext)
+                    # unzip the .gz if needed
+                    if gz_ext in ['.gz', ".GZ"]:
+                        # unzip dest file
+                        with open(dest_path + wfull_ext, 'wb') as f_out, \
+                                gzip.open(dest_path + wfull_ext + gz_ext, 'rb') as f_in:
+                            shutil.copyfileobj(f_in, f_out)
+                        os.remove(dest_path + wfull_ext + gz_ext)
 
-            # unzip the .gz if needed
-            if gz_ext in ['.gz', ".GZ"]:
-                # unzip dest file
-                with open(dest_path, 'wb') as f_out, gzip.open(dest_path + gz_ext, 'rb') as f_in:
-                    shutil.copyfileobj(f_in, f_out)
-                os.remove(dest_path + gz_ext)
+            else:
+                relax_ext = ""
+                relax_paths = sorted(
+                    self.fileclient.glob(prev_path_full + ".relax*"))
+                if relax_paths:
+                    if len(relax_paths) > 9:
+                        raise ValueError(
+                            "CopyVaspOutputs doesn't properly handle >9 relaxations!")
+                    m = re.search('\.relax\d*', relax_paths[-1])
+                    relax_ext = m.group(0)
+
+                # detect .gz extension if needed - note that monty zpath() did not seem useful here
+                gz_ext = ""
+                if not (f + relax_ext) in all_files:
+                    for possible_ext in [".gz", ".GZ"]:
+                        if (f + relax_ext + possible_ext) in all_files:
+                            gz_ext = possible_ext
+
+                if not (f + relax_ext + gz_ext) in all_files:
+                    raise ValueError("Cannot find file: {}".format(f))
+
+                # copy the file (minus the relaxation extension)
+                self.fileclient.copy(prev_path_full + relax_ext + gz_ext,
+                                     dest_path + gz_ext)
+
+                # unzip the .gz if needed
+                if gz_ext in ['.gz', ".GZ"]:
+                    # unzip dest file
+                    with open(dest_path, 'wb') as f_out, gzip.open(dest_path + gz_ext, 'rb') as f_in:
+                        shutil.copyfileobj(f_in, f_out)
+                    os.remove(dest_path + gz_ext)
+
+
+
+
+
 
 
 @explicit_serialize
