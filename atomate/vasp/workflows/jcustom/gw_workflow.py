@@ -17,15 +17,17 @@ def gw_wf(structure, ncores, vis_static=None, vasp_input_set_params=None, vaspto
     static_fw = StaticFW(
         structure,
         vasp_input_set=vis_static,
-        vasp_input_set_params={"force_gamma": True, "user_incar_settings":{"EDIFF": 1E-8}},
+        vasp_input_set_params={"force_gamma": True, "user_incar_settings":{"EDIFF": 1E-8, "LWAVE":True}},
         name="gw_static") #ediff=1e-4
 
     # 2. DIAG
-    diag_fw = JMVLGWFW(structure, ncores=ncores, parents=static_fw, vasp_input_set_params=vasp_input_set_params,
+    diag_fw = JMVLGWFW(structure, ncores=ncores, parents=static_fw,
+                       vasp_input_set_params={"user_incar_settings": {"LWAVE": True}},
                        mode="DIAG", name="gw_diag")
 
     # 3. GW
-    gw_fw = JMVLGWFW(structure, ncores=ncores, parents=diag_fw, vasp_input_set_params=vasp_input_set_params,
+    gw_fw = JMVLGWFW(structure, ncores=ncores, parents=diag_fw,
+                     vasp_input_set_params={"user_incar_settings": {"LWAVE": True}},
                      mode="GW", name="gw_gw")
 
     # 4. BSE
