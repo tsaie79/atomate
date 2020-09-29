@@ -112,15 +112,22 @@ class JMVLGWFW(Firework):
             structure.composition.reduced_formula if structure else "unknown", name
         )
 
+        additional_file = None
+        if mode == "GW":
+            additional_file = ["WAVECAR", "WAVEDER"]
+        elif mode == "BSE":
+            additional_file = ["WAVECAR", "WAVEDER", "WFULL"]
+
+
         if prev_calc_dir:
-            t.append(CopyVaspOutputs(calc_dir=prev_calc_dir, contcar_to_poscar=True, additional_files=["$ALL"]))
+            t.append(CopyVaspOutputs(calc_dir=prev_calc_dir, contcar_to_poscar=True, additional_files=additional_file))
             t.append(JWriteMVLGWFromPrev(nbands=nbands, reciprocal_density=reciprocal_density,
                                          nbands_factor=nbands_factor, ncores=ncores, prev_incar=prev_incar,
                                          mode=mode, other_params=vasp_input_set_params))
         elif parents:
             if prev_calc_loc:
                 t.append(
-                    CopyVaspOutputs(calc_loc=prev_calc_loc, contcar_to_poscar=True, additional_files=["$ALL"])
+                    CopyVaspOutputs(calc_loc=prev_calc_loc, contcar_to_poscar=True, additional_files=additional_file)
                 )
             t.append(JWriteMVLGWFromPrev(nbands=nbands, reciprocal_density=reciprocal_density,
                                          nbands_factor=nbands_factor, ncores=ncores, prev_incar=prev_incar,
