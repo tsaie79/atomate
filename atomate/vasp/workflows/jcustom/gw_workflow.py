@@ -15,7 +15,7 @@ def gw_wf(structure, ncores, vis_static=None, vasp_input_set_params=None, vaspto
     fws = []
     # 1. STATIC
     static_fw = StaticFW(structure, vasp_input_set=vis_static, vasp_input_set_params={"force_gamma": True},
-                         name="gw_static")
+                         name="gw_static") #ediff=1e-4
 
     # 2. DIAG
     diag_fw = JMVLGWFW(structure, ncores=ncores, parents=static_fw, vasp_input_set_params=vasp_input_set_params,

@@ -136,22 +136,21 @@ class JWriteMVLGWFromPrev(FiretaskBase):
 
     def run_task(self, fw_spec):
 
-        # more k-points for dielectric calc.
         other_params = self.get("other_params", {})
         user_incar_settings = other_params.get("user_incar_settings", {})
 
         if "user_incar_settings" not in other_params:
             other_params["user_incar_settings"] = {}
 
-        updates = {
-            # "ADDGRID": True,
-            # "LASPH": True,
-            # "LDAU": False,
-            # "LMIXTAU": True,
-            # "METAGGA": "SCAN",
-            # "NELM": 200,
-        }
-        other_params["user_incar_settings"].update(updates)
+        # updates = {
+        #     # "ADDGRID": True,
+        #     # "LASPH": True,
+        #     # "LDAU": False,
+        #     # "LMIXTAU": True,
+        #     # "METAGGA": "SCAN",
+        #     # "NELM": 200,
+        # }
+        # other_params["user_incar_settings"].update(updates)
 
         vis = MVLGWSet.from_prev_calc(
             prev_calc_dir=self.get("prev_calc_dir", "."),
