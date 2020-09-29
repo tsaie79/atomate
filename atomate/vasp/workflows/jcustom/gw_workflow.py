@@ -14,8 +14,11 @@ import numpy as np
 def gw_wf(structure, ncores, vis_static=None, vasp_input_set_params=None, vasptodb=None, wf_addition_name=None):
     fws = []
     # 1. STATIC
-    static_fw = StaticFW(structure, vasp_input_set=vis_static, vasp_input_set_params={"force_gamma": True},
-                         name="gw_static") #ediff=1e-4
+    static_fw = StaticFW(
+        structure,
+        vasp_input_set=vis_static,
+        vasp_input_set_params={"force_gamma": True, "user_incar_settings":{"EDIFF": 1E-8}},
+        name="gw_static") #ediff=1e-4
 
     # 2. DIAG
     diag_fw = JMVLGWFW(structure, ncores=ncores, parents=static_fw, vasp_input_set_params=vasp_input_set_params,
