@@ -9,6 +9,7 @@ from pymatgen.io.vasp.sets import (
     MPScanStaticSet,
     MPScanRelaxSet,
     MVLScanRelaxSet,
+    MVLGWSet,
     MITMDSet,
     MITRelaxSet,
     MPStaticSet,
@@ -51,8 +52,93 @@ from atomate.vasp.firetasks.write_inputs import (
 )
 from atomate.vasp.firetasks.neb_tasks import WriteNEBFromImages, WriteNEBFromEndpoints
 from atomate.vasp.firetasks.jcustom import RmSelectiveDynPoscar, SelectiveDynmaicPoscar, \
-    JWriteScanVaspStaticFromPrev
+    JWriteScanVaspStaticFromPrev, JWriteMVLGWFromPrev
 from atomate.vasp.config import VASP_CMD, DB_FILE
+
+
+class JMVLGWFW(Firework):
+    def __init__(
+            self,
+            structure,
+            mode,
+            name="J MVLGW",
+
+            prev_incar=None,
+            nbands=None,
+            reciprocal_density=None,
+            nbands_factor=None,
+            ncores=None,
+
+            vasp_input_set=None,
+            vasp_input_set_params=None,
+            vasp_cmd=VASP_CMD,
+            prev_calc_loc=True,
+            prev_calc_dir=None,
+            db_file=DB_FILE,
+            vasptodb_kwargs=None,
+            parents=None,
+            **kwargs
+    ):
+        """
+        Standard static calculation Firework - either from a previous location or from a structure.
+
+        Args:
+            structure (Structure): Input structure. Note that for prev_calc_loc jobs, the structure
+                is only used to set the name of the FW and any structure with the same composition
+                can be used.
+            name (str): Name for the Firework.
+            vasp_input_set (VaspInputSet): input set to use (for jobs w/no parents)
+                Defaults to MPStaticSet() if None.
+            vasp_input_set_params (dict): Dict of vasp_input_set kwargs.
+            vasp_cmd (str): Command to run vasp.
+            prev_calc_loc (bool or str): If true (default), copies outputs from previous calc. If
+                a str value, retrieves a previous calculation output by name. If False/None, will create
+                new static calculation using the provided structure.
+            prev_calc_dir (str): Path to a previous calculation to copy from
+            db_file (str): Path to file specifying db credentials.
+            parents (Firework): Parents of this particular Firework. FW or list of FWS.
+            vasptodb_kwargs (dict): kwargs to pass to VaspToDb
+            \*\*kwargs: Other kwargs that are passed to Firework.__init__.
+        """
+        t = []
+
+        vasp_input_set_params = vasp_input_set_params or {}
+        vasptodb_kwargs = vasptodb_kwargs or {}
+        if "additional_fields" not in vasptodb_kwargs:
+            vasptodb_kwargs["additional_fields"] = {}
+        vasptodb_kwargs["additional_fields"]["task_label"] = name
+
+        fw_name = "{}-{}".format(
+            structure.composition.reduced_formula if structure else "unknown", name
+        )
+
+        if prev_calc_dir:
+            t.append(CopyVaspOutputs(calc_dir=prev_calc_dir, contcar_to_poscar=True, additional_files=["$ALL"]))
+            t.append(JWriteMVLGWFromPrev(nbands=nbands, reciprocal_density=reciprocal_density,
+                                         nbands_factor=nbands_factor, ncores=ncores, prev_incar=prev_incar,
+                                         mode=mode, other_params=vasp_input_set_params))
+        elif parents:
+            if prev_calc_loc:
+                t.append(
+                    CopyVaspOutputs(calc_loc=prev_calc_loc, contcar_to_poscar=True, additional_files=["$ALL"])
+                )
+            t.append(JWriteMVLGWFromPrev(nbands=nbands, reciprocal_density=reciprocal_density,
+                                         nbands_factor=nbands_factor, ncores=ncores, prev_incar=prev_incar,
+                                         mode=mode, other_params=vasp_input_set_params))
+        elif structure:
+            vasp_input_set = vasp_input_set or MVLGWSet(
+                structure, **vasp_input_set_params
+            )
+            t.append(
+                WriteVaspFromIOSet(structure=structure, vasp_input_set=vasp_input_set)
+            )
+        else:
+            raise ValueError("Must specify structure or previous calculation")
+
+        t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<"))
+        t.append(PassCalcLocs(name=name))
+        t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
+        super(JMVLGWFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
 
 
 class JScanOptimizeFW(Firework):
