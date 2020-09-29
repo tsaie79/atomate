@@ -23,7 +23,7 @@ def gw_wf(structure, ncores, vis_static=None, vasp_input_set_params=None, vaspto
 
     # 2. DIAG
     diag_fw = JMVLGWFW(structure, ncores=ncores, parents=static_fw,
-                       vasp_input_set_params={"user_incar_settings": {"LWAVE": True,}},
+                       vasp_input_set_params={"user_incar_settings": {"LWAVE": True}},
                        mode="DIAG", name="gw_diag")
 
     # 3. GW
