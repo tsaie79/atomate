@@ -113,7 +113,10 @@ class JMVLGWFW(Firework):
         )
 
         additional_file = []
-        if mode == "GW":
+
+        if mode == "DIAG":
+            additional_file.append("WAVECAR")
+        elif mode == "GW":
             additional_file.append("WAVECAR")
             additional_file.append("WAVEDER")
         elif mode == "BSE":
