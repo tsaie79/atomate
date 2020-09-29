@@ -18,7 +18,7 @@ class RmSelectiveDynPoscar(FiretaskBase):
 
 @explicit_serialize
 class SelectiveDynmaicPoscar(FiretaskBase):
-    _fw_name = "SelectiveDynamicPoscar"
+
     required_params = ["selective_dynamics", "nsites"]
 
     def run_task(self, fw_spec):
