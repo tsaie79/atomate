@@ -112,11 +112,14 @@ class JMVLGWFW(Firework):
             structure.composition.reduced_formula if structure else "unknown", name
         )
 
-        additional_file = None
+        additional_file = []
         if mode == "GW":
-            additional_file = ["WAVECAR", "WAVEDER"]
+            additional_file.append("WAVECAR")
+            additional_file.append("WAVEDER")
         elif mode == "BSE":
-            additional_file = ["WAVECAR", "WAVEDER", "WFULL"]
+            additional_file.append("WAVECAR")
+            additional_file.append("WAVEDER")
+            additional_file.append("WFULL")
 
 
         if prev_calc_dir:
