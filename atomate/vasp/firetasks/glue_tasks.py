@@ -79,6 +79,7 @@ class CopyVaspOutputs(CopyFiles):
                 files_to_copy.extend(self["additional_files"])
 
         # decide between poscar and contcar
+        print(files_to_copy)
         contcar_to_poscar = self.get("contcar_to_poscar", True)
         if contcar_to_poscar and "CONTCAR" not in files_to_copy:
             files_to_copy.append("CONTCAR")
