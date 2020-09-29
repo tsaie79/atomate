@@ -151,7 +151,7 @@ class JWriteMVLGWFromPrev(FiretaskBase):
         #     # "NELM": 200,
         # }
         # other_params["user_incar_settings"].update(updates)
-
+        print(self.get("nbands"), self.get("nbands_factor"), self.get("ncores"))
         vis = MVLGWSet.from_prev_calc(
             prev_calc_dir=self.get("prev_calc_dir", "."),
             prev_incar=self.get("prev_incar", None),
