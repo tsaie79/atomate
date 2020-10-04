@@ -204,7 +204,10 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, encut=
             },
             job_type="normal",
             max_force_threshold=False,
-            name="SCAN_relax"
+            name="SCAN_relax",
+            vasptodb_kwargs={
+                "parse_dos": False
+            }
         )
 
         # FW2 Run SCAN SCF
@@ -214,7 +217,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, encut=
                 "EDIFF": 1e-05,
                 "ENCUT": encut,
                 "ISMEAR": 0,
-                "LCHARG": False,
+                "LCHARG": True,
                 "NUPDOWN": nupdown,
             },
             "user_kpoints_settings": user_kpoints_settings
@@ -230,11 +233,15 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, encut=
             vasp_input_set_params=uis_scan_scf,
             parents=scan_opt,
             name="SCAN_scf",
-            vasptodb_kwargs={"additional_fields": {
-                "task_type": "MPScanStaticSet",
-                "charge_state": cs,
-                "nupdown_set": nupdown,
-            }})
+            vasptodb_kwargs={
+                "additional_fields": {
+                    "task_type": "MPScanStaticSet",
+                    "charge_state": cs,
+                    "nupdown_set": nupdown,
+                },
+                "parse_dos": True,
+                "parse_chgcar": True
+            })
         fws.append(scan_opt)
         fws.append(scan_scf)
 
