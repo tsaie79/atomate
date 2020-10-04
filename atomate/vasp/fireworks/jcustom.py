@@ -170,6 +170,7 @@ class JScanOptimizeFW(Firework):
             auto_npar=">>auto_npar<<",
             half_kpts_first_relax=HALF_KPOINTS_FIRST_RELAX,
             parents=None,
+            vasptodb_kwargs=None,
             **kwargs
     ):
         """
@@ -203,6 +204,11 @@ class JScanOptimizeFW(Firework):
                 "A double relaxation run might not be appropriate with ISIF {}".format(
                     vasp_input_set.incar["ISIF"]))
 
+        vasptodb_kwargs = vasptodb_kwargs or {}
+        if "additional_fields" not in vasptodb_kwargs:
+            vasptodb_kwargs["additional_fields"] = {}
+        vasptodb_kwargs["additional_fields"]["task_label"] = name
+
         t = []
         t.append(WriteVaspFromIOSet(structure=structure, vasp_input_set=vasp_input_set))
         t.append(
@@ -216,7 +222,7 @@ class JScanOptimizeFW(Firework):
             )
         )
         t.append(PassCalcLocs(name=name))
-        t.append(VaspToDb(db_file=db_file, additional_fields={"task_label": name}))
+        t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
         super(JScanOptimizeFW, self).__init__(
             t,
             parents=parents,

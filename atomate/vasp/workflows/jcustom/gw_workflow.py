@@ -18,21 +18,22 @@ def gw_wf(structure, ncores, vis_static=None, vasp_input_set_params=None, vaspto
         structure,
         vasp_input_set=vis_static,
         vasp_input_set_params={"force_gamma": True,
-                               "user_incar_settings":{"EDIFF": 1E-8, "LWAVE":True, "LAECHG": False}},
+                               "user_incar_settings":{"EDIFF": 1E-8, "LWAVE":True, "LAECHG": False, "LCHARG":False}},
         name="gw_static") #ediff=1e-4
 
     # 2. DIAG
     diag_fw = JMVLGWFW(structure, ncores=ncores, parents=static_fw,
-                       vasp_input_set_params={"user_incar_settings": {"LWAVE": True}},
+                       vasp_input_set_params={"user_incar_settings": {"LWAVE": True, "LCHARG":False}},
                        mode="DIAG", name="gw_diag")
 
     # 3. GW
     gw_fw = JMVLGWFW(structure, ncores=ncores, parents=diag_fw,
-                     vasp_input_set_params={"user_incar_settings": {"LWAVE": True}},
+                     vasp_input_set_params={"user_incar_settings": {"LWAVE": True, "LCHARG":False}},
                      mode="GW", name="gw_gw")
 
     # 4. BSE
-    bse_fw = JMVLGWFW(structure, ncores=ncores, parents=gw_fw, vasp_input_set_params=vasp_input_set_params,
+    bse_fw = JMVLGWFW(structure, ncores=ncores, parents=gw_fw,
+                      vasp_input_set_params={"user_incar_settings": {"LWAVE": False, "LCHARG":False}},
                       mode="BSE", name="gw_bse")
 
     fws.append(static_fw)
