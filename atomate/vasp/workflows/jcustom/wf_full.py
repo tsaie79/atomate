@@ -206,8 +206,8 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, encut=
             max_force_threshold=False,
             name="SCAN_relax",
             vasptodb_kwargs={
-                "parse_dos": False,
-                "parse_eigenvalues":False
+                "parse_dos": True,
+                "parse_eigenvalues":True
             }
         )
 
