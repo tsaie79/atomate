@@ -206,6 +206,11 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, encut=
             max_force_threshold=False,
             name="SCAN_relax",
             vasptodb_kwargs={
+                "additional_fields": {
+                    "task_type": "JScanOptimizeFW",
+                    "charge_state": cs,
+                    "nupdown_set": nupdown,
+                },
                 "parse_dos": True,
                 "parse_eigenvalues": True,
                 "parse_chgcar": True
@@ -237,7 +242,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, encut=
             name="SCAN_scf",
             vasptodb_kwargs={
                 "additional_fields": {
-                    "task_type": "MPScanStaticSet",
+                    "task_type": " JScanStaticFW",
                     "charge_state": cs,
                     "nupdown_set": nupdown,
                 },
