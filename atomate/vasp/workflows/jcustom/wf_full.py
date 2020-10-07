@@ -160,7 +160,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, encut=
             "ISMEAR": 0,
             "SIGMA": 0.001,
             "EDIFFG": -0.01,
-            "LCHARG": False,
+            "LCHARG": True,
             "NUPDOWN": nupdown,
         }
 
@@ -208,7 +208,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, encut=
             vasptodb_kwargs={
                 "parse_dos": True,
                 "parse_eigenvalues": True,
-                "parse_chgcar": False
+                "parse_chgcar": True
             }
         )
 
