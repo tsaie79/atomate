@@ -13,3 +13,7 @@ fireworks:
   params:
     parents: 1
     mode: line
+    input_set_overrides:
+      other_params:
+        two_d_kpoints:
+          True
