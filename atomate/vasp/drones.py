@@ -30,7 +30,7 @@ from pymatgen.electronic_structure.bandstructure import BandStructureSymmLine
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 from pymatgen.io.vasp import BSVasprun, Vasprun, Outcar, Locpot
 from pymatgen.io.vasp.inputs import Poscar, Potcar, Incar, Kpoints
-from pymatgen.io.vasp.outputs import Chgcar
+from pymatgen.io.vasp.outputs import Chgcar, Wavecar
 from pymatgen.apps.borg.hive import AbstractDrone
 from pymatgen.command_line.bader_caller import bader_analysis_from_path
 
@@ -87,6 +87,7 @@ class VaspDrone(AbstractDrone):
     def __init__(self, runs=None, parse_dos="auto", bandstructure_mode="auto",
                  parse_locpot=True, additional_fields=None, use_full_uri=True,
                  parse_bader=bader_exe_exists, parse_chgcar=False, parse_aeccar=False,
+                 parse_wavecar=False,
                  parse_eigenvalues=False,
                  parse_potcar_file=True,
                  store_volumetric_data=STORE_VOLUMETRIC_DATA,
@@ -131,12 +132,14 @@ class VaspDrone(AbstractDrone):
         self.parse_potcar_file = parse_potcar_file
         self.parse_eigenvalues = parse_eigenvalues
 
-        if parse_chgcar or parse_aeccar:
+        if parse_chgcar or parse_wavecar or parse_aeccar:
             warnings.warn("These options have been deprecated in favor of the 'store_volumetric_data' "
                           "keyword argument, which is more general. Functionality is equivalent.",
                           DeprecationWarning)
             if parse_chgcar and "chgcar" not in self.store_volumetric_data:
                 self.store_volumetric_data.append("chgcar")
+            if parse_wavecar and "wavecar" not in self.store_volumetric_data:
+                self.store_volumetric_data.append("wavecar")
             if parse_aeccar and "aeccar0" not in self.store_volumetric_data:
                 self.store_volumetric_data.append("aeccar0")
             if parse_aeccar and "aeccar2" not in self.store_volumetric_data:
@@ -426,8 +429,12 @@ class VaspDrone(AbstractDrone):
                 if file in d["output_file_paths"]:
                     try:
                         # assume volumetric data is all in CHGCAR format
-                        data = Chgcar.from_file(os.path.join(dir_name, d["output_file_paths"][file]))
-                        d[file] = data
+                        if file == "wavecar":
+                            data = Wavecar(filename=os.path.join(dir_name, d["output_file_paths"][file]))
+                            d[file] = data
+                        else:
+                            data = Chgcar.from_file(os.path.join(dir_name, d["output_file_paths"][file]))
+                            d[file] = data
                     except:
                         raise ValueError("Failed to parse {} at {}.".format(file,
                                                                             d["output_file_paths"][file]))

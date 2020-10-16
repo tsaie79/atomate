@@ -112,7 +112,7 @@ class VaspCalcDb(CalcDb):
         vol_data = {}
         eigenvals = {}
 
-        # move dos BS and CHGCAR from doc to gridfs
+        # move dos BS and CHGCAR, WAVECAR from doc to gridfs
         if use_gridfs and "calcs_reversed" in task_doc:
 
             if "dos" in task_doc["calcs_reversed"][0]:  # only store idx=0 (last step)
@@ -135,6 +135,7 @@ class VaspCalcDb(CalcDb):
 
             for vol_data_name in (
                 "chgcar",
+                "wavecar",
                 "locpot",
                 "aeccar0",
                 "aeccar1",
@@ -234,6 +235,9 @@ class VaspCalcDb(CalcDb):
         if "chgcar_fs_id" in calc:
             chgcar = self.get_chgcar(task_id)
             calc["chgcar"] = chgcar
+        if "wavecar_fs_id" in calc:
+            wavecar = self.get_wavecar(task_id)
+            calc["wavecar"] = wavecar
         if "aeccar0_fs_id" in calc:
             aeccar = self.get_aeccar(task_id)
             calc["aeccar0"] = aeccar["aeccar0"]
@@ -318,6 +322,21 @@ class VaspCalcDb(CalcDb):
         chgcar_json = zlib.decompress(fs.get(fs_id).read())
         chgcar = json.loads(chgcar_json, cls=MontyDecoder)
         return chgcar
+
+    def get_wavecar(self, task_id):
+        """
+        Read the CHGCAR grid_fs data into a Chgcar object
+        Args:
+            task_id(int or str): the task_id containing the gridfs metadata
+        Returns:
+            chgcar: Chgcar object
+        """
+        m_task = self.collection.find_one({"task_id": task_id}, {"calcs_reversed": 1})
+        fs_id = m_task["calcs_reversed"][0]["wavecar_fs_id"]
+        fs = gridfs.GridFS(self.db, "wavecar_fs")
+        wavecar_json = zlib.decompress(fs.get(fs_id).read())
+        wavecar = json.loads(wavecar_json, cls=MontyDecoder)
+        return wavecar
 
     def get_aeccar(self, task_id, check_valid=True):
         """
