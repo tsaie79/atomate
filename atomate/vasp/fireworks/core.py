@@ -73,6 +73,7 @@ class OptimizeFW(Firework):
         auto_npar=">>auto_npar<<",
         half_kpts_first_relax=HALF_KPOINTS_FIRST_RELAX,
         parents=None,
+        vasptodb_kwargs=None,
         **kwargs
     ):
         """
@@ -119,7 +120,7 @@ class OptimizeFW(Firework):
             )
         )
         t.append(PassCalcLocs(name=name))
-        t.append(VaspToDb(db_file=db_file, additional_fields={"task_label": name}))
+        t.append(VaspToDb(db_file=db_file, additional_fields={"task_label": name}, **vasptodb_kwargs))
         super(OptimizeFW, self).__init__(
             t,
             parents=parents,
