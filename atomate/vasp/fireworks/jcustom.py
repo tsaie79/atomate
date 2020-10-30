@@ -77,6 +77,7 @@ class JSelectiveOptFW(Firework):
             parents=None,
             vasptodb_kwargs=None,
             selective_dynamics=None,
+            prev_calc_loc=True,
             **kwargs
     ):
 
@@ -90,7 +91,16 @@ class JSelectiveOptFW(Firework):
                 "A double relaxation run might not be appropriate with ISIF {}".format(
                     vasp_input_set.incar["ISIF"]))
         t = []
-        t.append(WriteVaspFromIOSet(structure=structure, vasp_input_set=vasp_input_set))
+        if parents:
+            if prev_calc_loc:
+                t.append(
+                    CopyVaspOutputs(calc_loc=prev_calc_loc, contcar_to_poscar=True)
+                )
+            t.append(WriteVaspStaticFromPrev(other_params=vasp_input_set))
+
+        elif structure:
+            t.append(WriteVaspFromIOSet(structure=structure, vasp_input_set=vasp_input_set))
+
         if selective_dynamics:
             t.append(SelectiveDynmaicPoscar(selective_dynamics=selective_dynamics, nsites=len(structure.sites)))
         t.append(
