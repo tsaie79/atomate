@@ -96,7 +96,10 @@ class JSelectiveOptFW(Firework):
                 t.append(
                     CopyVaspOutputs(calc_loc=prev_calc_loc, contcar_to_poscar=True)
                 )
-            t.append(WriteVaspStaticFromPrev(other_params={"user_incar_settings":vasp_input_set.incar.as_dict()}))
+            mprelax_incar = MPRelaxSet(structure, force_gamma=force_gamma, **override_default_vasp_params).incar.as_dict()
+            mprelax_incar.pop("@module")
+            mprelax_incar.pop("@class")
+            t.append(WriteVaspStaticFromPrev(other_params={"user_incar_settings": mprelax_incar}))
 
         elif structure:
             t.append(WriteVaspFromIOSet(structure=structure, vasp_input_set=vasp_input_set))
