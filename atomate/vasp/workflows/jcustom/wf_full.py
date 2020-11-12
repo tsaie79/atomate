@@ -69,7 +69,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, encut=5
         vis_relax = vis_relax.__class__.from_dict(v)
 
         # FW1 Structure optimization firework
-        opt = OptimizeFW(
+        opt = JOptimizeFW(
             structure=structure,
             vasp_input_set=vis_relax,
             db_file=DB_FILE if DB_FILE else '>>db_file<<',
