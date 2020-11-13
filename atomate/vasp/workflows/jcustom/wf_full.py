@@ -62,20 +62,17 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, encut=5
         else:
             user_kpoints_settings = None
 
-        # input set for relaxation
-        vis_relax = MPRelaxSet(structure, force_gamma=True)
-        v = vis_relax.as_dict()
-        v.update({"user_incar_settings": user_incar_settings, "user_kpoints_settings": user_kpoints_settings})
-        vis_relax = vis_relax.__class__.from_dict(v)
 
         # FW1 Structure optimization firework
         opt = JOptimizeFW(
             structure=structure,
-            vasp_input_set=vis_relax,
-            db_file=DB_FILE if DB_FILE else '>>db_file<<',
             name="PBE_relax",
             max_force_threshold=False,
-            job_type="normal"
+            job_type="normal",
+            override_default_vasp_params={
+                "user_incar_settings": user_incar_settings,
+                "user_kpoints_settings": user_kpoints_settings
+            },
         )
 
         # FW2 Run HSE relax
