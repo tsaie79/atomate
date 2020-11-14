@@ -528,7 +528,12 @@ class HSERelaxFW(Firework):
             t.append(WriteVaspFromPMGObjects(kpoints=MPHSERelaxSet(structure=structure, 
                                                                    force_gamma=force_gamma).kpoints.as_dict()))
         
-        t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<", max_errors=5, wall_time=wall_time))
+        t.append(RunVaspCustodian(vasp_cmd=vasp_cmd,
+                                  job_type="normal",
+                                  max_force_threshold=False,
+                                  auto_npar=">>auto_npar<<",
+                                  max_errors=5,
+                                  wall_time=wall_time))
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
         super(HSERelaxFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
