@@ -139,7 +139,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, e
             fws = [hse_scf]
         elif task == "hse_relax-hse_scf":
             hse_relax.parents = []
-            hse_scf.parents = hse_relax
+            hse_scf.parents = [hse_relax]
             fws = [hse_relax, hse_scf]
         elif task == "opt-hse_relax-hse_scf":
             fws = [opt, hse_relax, hse_scf]
