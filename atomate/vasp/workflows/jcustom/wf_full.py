@@ -118,28 +118,27 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, c
 
         uis_hse_scf["user_incar_settings"].update({"NELECT": nelect})
 
-        hse_scf = JHSEStaticFW(
-            structure,
-            vasp_input_set_params=uis_hse_scf,
-            parents=hse_relax,
-            name="HSE_scf",
-            vasptodb_kwargs={
-                "additional_fields": {
-                    "task_type": "JHSEStaticFW",
-                    "charge_state": cs,
-                    "nupdown_set": nupdown
+        def hse_scf(parents):
+            fw = JHSEStaticFW(
+                structure,
+                vasp_input_set_params=uis_hse_scf,
+                parents=parents,
+                name="HSE_scf",
+                vasptodb_kwargs={
+                    "additional_fields": {
+                        "task_type": "JHSEStaticFW",
+                        "charge_state": cs,
+                        "nupdown_set": nupdown
+                    }
                 }
-            }
-        )
+            )
+            return fw
 
         if task == "hse_relax":
             hse_relax.parents = []
             fws = [hse_relax]
         elif task == "hse_scf":
-            hse_scf.parents = None
-            print(hse_scf.parents)
-            fws = [hse_scf]
-            print(fws)
+            fws = [hse_scf(parents=None)]
         elif task == "hse_relax-hse_scf":
             hse_relax.parents = []
             hse_scf.parents = [hse_relax]
