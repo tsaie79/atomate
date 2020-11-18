@@ -13,6 +13,8 @@ import numpy as np
 
 def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, encut=520,
                     vasptodb=None, wf_addition_name=None):
+    vasptodb = vasptodb or {}
+
     fws = []
     for cs, nupdown in zip(charge_states, nupdowns):
         print("Formula: {}".format(structure.formula))
@@ -144,6 +146,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, e
 
     wf_name = "{}:{}:q{}:sp{}".format("".join(structure.formula.split(" ")), wf_addition_name, charge_states, nupdowns)
     wf = Workflow(fws, name=wf_name)
+
     vasptodb.update({"wf": [fw.name for fw in wf.fws]})
     wf = add_additional_fields_to_taskdocs(wf, vasptodb)
     wf = add_namefile(wf)
