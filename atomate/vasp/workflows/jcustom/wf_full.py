@@ -79,19 +79,20 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, c
         )
 
         # FW2 Run HSE relax
-        hse_relax = JHSERelaxFW(
-            structure=structure,
-            vasp_input_set_params={
-                "user_incar_settings": user_incar_settings,
-                "user_kpoints_settings": user_kpoints_settings
-            },
-            name="HSE_relax",
-            vasptodb_kwargs={"additional_fields": {
-                "charge_state": cs,
-                "nupdown_set": nupdown
-            }},
-            parents=opt
-        )
+        def hse_relax(parents):
+            hse_relax = JHSERelaxFW(
+                structure=structure,
+                vasp_input_set_params={
+                    "user_incar_settings": user_incar_settings,
+                    "user_kpoints_settings": user_kpoints_settings
+                },
+                name="HSE_relax",
+                vasptodb_kwargs={"additional_fields": {
+                    "charge_state": cs,
+                    "nupdown_set": nupdown
+                }},
+                parents=parents
+            )
 
         # FW3 Run HSE SCF
         uis_hse_scf = {
@@ -135,16 +136,13 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, c
             return fw
 
         if task == "hse_relax":
-            hse_relax.parents = []
-            fws = [hse_relax]
+            fws = [hse_relax(parents=None)]
         elif task == "hse_scf":
             fws = [hse_scf(parents=None)]
         elif task == "hse_relax-hse_scf":
-            hse_relax.parents = []
-            hse_scf.parents = [hse_relax]
-            fws = [hse_relax, hse_scf]
+            fws = [hse_relax(parents=None), hse_scf(parents=hse_relax(parents=None))]
         elif task == "opt-hse_relax-hse_scf":
-            fws = [opt, hse_relax, hse_scf]
+            fws = [opt, hse_relax(parents=opt), hse_scf(parents=hse_relax(parents=None))]
 
     wf_name = "{}:{}:q{}:sp{}".format("".join(structure.formula.split(" ")), wf_addition_name, charge_states, nupdowns)
 
