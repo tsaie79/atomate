@@ -132,13 +132,13 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, e
         )
 
         if task == "hse_relax":
-            hse_relax.parents = None
+            hse_relax.parents = []
             fws = [hse_relax]
         elif task == "hse_scf":
             hse_scf.parents = []
             fws = [hse_scf]
         elif task == "hse_relax-hse_scf":
-            hse_relax.parents = None
+            hse_relax.parents = []
             hse_scf.parents = hse_relax
             fws = [hse_relax, hse_scf]
         elif task == "opt-hse_relax-hse_scf":
@@ -154,8 +154,11 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, e
     return wf
 
 
-def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, encut=520,
+def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, task, encut=520,
                      vasptodb=None, wf_addition_name=None):
+
+    vasptodb = vasptodb or {}
+
     fws = []
     for cs, nupdown in zip(charge_states, nupdowns):
         print("Formula: {}".format(structure.formula))
@@ -258,8 +261,14 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, encut=
                 "parse_dos": True,
                 "parse_chgcar": True
             })
-        fws.append(scan_opt)
-        fws.append(scan_scf)
+
+        if task == "scan_opt":
+            fws = [scan_opt]
+        elif task == "scan_scf":
+            scan_scf.parents = []
+            fws = [scan_scf]
+        elif task == "scan_opt-scan_scf":
+            fws = [scan_opt, scan_scf]
 
     wf_name = "{}:{}:q{}:sp{}".format("".join(structure.formula.split(" ")), wf_addition_name, charge_states, nupdowns)
     wf = Workflow(fws, name=wf_name)
