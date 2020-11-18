@@ -80,7 +80,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, c
 
         # FW2 Run HSE relax
         def hse_relax(parents):
-            hse_relax = JHSERelaxFW(
+            fw = JHSERelaxFW(
                 structure=structure,
                 vasp_input_set_params={
                     "user_incar_settings": user_incar_settings,
@@ -93,6 +93,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, c
                 }},
                 parents=parents
             )
+            return fw
 
         # FW3 Run HSE SCF
         uis_hse_scf = {
