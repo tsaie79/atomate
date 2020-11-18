@@ -13,6 +13,7 @@ import numpy as np
 
 def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, catagory, encut=520,
                     vasptodb=None, wf_addition_name=None):
+
     vasptodb = vasptodb or {}
 
     fws = []
@@ -124,7 +125,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, c
             name="HSE_scf",
             vasptodb_kwargs={
                 "additional_fields": {
-                    "task_type": "HSEStaticFW",
+                    "task_type": "JHSEStaticFW",
                     "charge_state": cs,
                     "nupdown_set": nupdown
                 }
@@ -136,7 +137,9 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, c
             fws = [hse_relax]
         elif task == "hse_scf":
             hse_scf.parents = None
+            print(hse_scf.parents)
             fws = [hse_scf]
+            print(fws)
         elif task == "hse_relax-hse_scf":
             hse_relax.parents = []
             hse_scf.parents = [hse_relax]
@@ -145,6 +148,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, c
             fws = [opt, hse_relax, hse_scf]
 
     wf_name = "{}:{}:q{}:sp{}".format("".join(structure.formula.split(" ")), wf_addition_name, charge_states, nupdowns)
+
     wf = Workflow(fws, name=wf_name)
 
     vasptodb.update({"wf": [fw.name for fw in wf.fws]})
