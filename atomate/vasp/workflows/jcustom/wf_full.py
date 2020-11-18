@@ -137,14 +137,16 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, c
             return fw
 
         if task == "hse_relax":
-            fws = [hse_relax(parents=None)]
+            fws.append(hse_relax(parents=None))
         elif task == "hse_scf":
-            fws = [hse_scf(parents=None)]
+            fws.append(hse_scf(parents=None))
         elif task == "hse_relax-hse_scf":
             fws.append(hse_relax(parents=None))
-            fws.append(hse_scf(fws[0]))
+            fws.append(hse_scf(fws[-1]))
         elif task == "opt-hse_relax-hse_scf":
-            fws = [opt, hse_relax(parents=opt), hse_scf(parents=hse_relax(parents=None))]
+            fws.append(opt)
+            fws.append(hse_relax(parents=fws[-1]))
+            fws.append(hse_scf(parents=fws[-1]))
 
     wf_name = "{}:{}:q{}:sp{}".format("".join(structure.formula.split(" ")), wf_addition_name, charge_states, nupdowns)
 
