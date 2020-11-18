@@ -154,9 +154,9 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, c
 
     vasptodb.update({"wf": [fw.name for fw in wf.fws]})
     wf = add_additional_fields_to_taskdocs(wf, vasptodb)
-    wf = set_execution_options(wf, category=catagory)
-    wf = add_namefile(wf)
     wf = add_modify_incar(wf)
+    wf = add_namefile(wf)
+    wf = set_execution_options(wf, category=catagory)
     return wf
 
 
