@@ -6,6 +6,7 @@ from pymatgen import Structure
 from pymatgen.io.vasp.sets import (
     MPRelaxSet,
     MPHSERelaxSet,
+    MPHSEBSSet,
     MPScanStaticSet,
     MPScanRelaxSet,
     MVLScanRelaxSet,
@@ -451,7 +452,7 @@ class JScanStaticFW(Firework):
 
 
 class JHSEStaticFW(Firework):
-    def __init__(self, structure=None, name="HSE_scf", vasp_input_set_params=None,
+    def __init__(self, structure=None, name="HSE_scf", vasp_input_set=None, vasp_input_set_params=None,
                  vasp_cmd=VASP_CMD, prev_calc_dir=None, db_file=DB_FILE, vasptodb_kwargs=None,
                  parents=None, cp_chargcar=True, force_gamma=True, **kwargs):
         t = []
@@ -465,14 +466,20 @@ class JHSEStaticFW(Firework):
         fw_name = "{}-{}".format(structure.composition.reduced_formula if structure else "unknown", name)
 
         if prev_calc_dir:
-            t.append(
-                CopyVaspOutputs(calc_dir=prev_calc_dir, additional_files=["CHGCAR"] if cp_chargcar else [])
-            )
+            t.append(CopyVaspOutputs(calc_dir=prev_calc_dir, contcar_to_poscar=True))
+            t.append(WriteVaspHSEBSFromPrev(mode="uniform", reciprocal_density=None, kpoints_line_density=None))
         elif parents:
-            t.append(CopyVaspOutputs(calc_loc=True, additional_files=["CHGCAR"] if cp_chargcar else []))
+            if prev_calc_dir:
+                t.append(CopyVaspOutputs(calc_loc=prev_calc_dir, contcar_to_poscar=True))
+            t.append(WriteVaspHSEBSFromPrev(mode="uniform", reciprocal_density=None, kpoints_line_density=None))
+        elif structure:
+            vasp_input_set = vasp_input_set or MPHSEBSSet(structure)
+            t.append(
+                WriteVaspFromIOSet(structure=structure, vasp_input_set=vasp_input_set)
+            )
         else:
             raise ValueError("Must specify structure or previous calculation")
-        t.append(WriteVaspHSEBSFromPrev(mode="uniform", reciprocal_density=None, kpoints_line_density=None))
+
         t.append(RmSelectiveDynPoscar())
 
         magmom = MPRelaxSet(structure).incar.get("MAGMOM", None)
@@ -481,6 +488,7 @@ class JHSEStaticFW(Firework):
 
         if vasp_input_set_params.get("user_incar_settings", {}):
             t.append(ModifyIncar(incar_update=vasp_input_set_params.get("user_incar_settings", {})))
+
         if vasp_input_set_params.get("user_kpoints_settings", {}):
             t.append(WriteVaspFromPMGObjects(kpoints=vasp_input_set_params.get("user_kpoints_settings", {})))
         else:
@@ -506,6 +514,7 @@ class JHSERelaxFW(Firework):
         vasptodb_kwargs["additional_fields"]["task_label"] = name
 
         fw_name = "{}-{}".format(structure.composition.reduced_formula if structure else "unknown", name)
+
 
         if parents:
             t.append(CopyVaspOutputs(calc_loc=True)) #, additional_files=["CHGCAR"]))
@@ -536,7 +545,7 @@ class JHSERelaxFW(Firework):
                                   wall_time=wall_time))
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
-        super(JSERelaxFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
+        super(JHSERelaxFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
 
 
 class JHSEcDFTFW(Firework):
