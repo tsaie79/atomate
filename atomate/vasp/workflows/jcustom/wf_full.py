@@ -11,8 +11,8 @@ from fireworks import Firework, LaunchPad, Workflow
 import numpy as np
 
 
-def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, encut=520,
-                    include_hse_relax=False, vasptodb=None, wf_addition_name=None):
+def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, encut=520,
+                    vasptodb=None, wf_addition_name=None):
     fws = []
     for cs, nupdown in zip(charge_states, nupdowns):
         print("Formula: {}".format(structure.formula))
@@ -76,7 +76,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, encut=5
         )
 
         # FW2 Run HSE relax
-        hse_relax = HSERelaxFW(
+        hse_relax = JHSERelaxFW(
             structure=structure,
             vasp_input_set_params={
                 "user_incar_settings": user_incar_settings,
@@ -98,14 +98,14 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, encut=5
                 # "AMIX_MAG": 0.8,
                 # "BMIX": 0.0001,
                 # "BMIX_MAG": 0.0001,
-                "EDIFF": 1.0e-05,
+                "EDIFF": 1.0e-07,
                 "ENCUT": encut,
                 "ISMEAR": 0,
                 "LCHARG": False,
                 "NSW": 0,
                 "NUPDOWN": nupdown,
                 "NELM": 150,
-                "SIGMA": 0.001
+                "SIGMA": 0.05
             },
             "user_kpoints_settings": user_kpoints_settings
         }
@@ -115,23 +115,32 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, encut=5
 
         uis_hse_scf["user_incar_settings"].update({"NELECT": nelect})
 
-        if include_hse_relax:
-            parent_hse_scf = hse_relax
-        else:
-            parent_hse_scf = opt
-        scf = HSEStaticFW(structure,
-                          vasp_input_set_params=uis_hse_scf,
-                          parents=parent_hse_scf,
-                          name="HSE_scf",
-                          vasptodb_kwargs={"additional_fields": {
-                              "task_type": "HSEStaticFW",
-                              "charge_state": cs,
-                              "nupdown_set": nupdown
-                          }})
-        fws.append(opt)
-        if include_hse_relax:
-            fws.append(hse_relax)
-        fws.append(scf)
+        hse_scf = JHSEStaticFW(
+            structure,
+            vasp_input_set_params=uis_hse_scf,
+            parents=hse_relax,
+            name="HSE_scf",
+            vasptodb_kwargs={
+                "additional_fields": {
+                    "task_type": "HSEStaticFW",
+                    "charge_state": cs,
+                    "nupdown_set": nupdown
+                }
+            }
+        )
+
+        if task == "hse_relax":
+            hse_relax.parents = None
+            fws = [hse_relax]
+        elif task == "hse_scf":
+            hse_scf.parents = None
+            fws = [hse_scf]
+        elif task == "hse_relax-hse_scf":
+            hse_relax.parents = None
+            hse_scf.parents = hse_relax
+            fws = [hse_relax, hse_scf]
+        elif task == "opt-hse_relax-hse_scf":
+            fws = [opt, hse_relax, hse_scf]
 
     wf_name = "{}:{}:q{}:sp{}".format("".join(structure.formula.split(" ")), wf_addition_name, charge_states, nupdowns)
     wf = Workflow(fws, name=wf_name)
