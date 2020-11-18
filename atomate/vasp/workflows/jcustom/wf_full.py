@@ -253,28 +253,30 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, task, 
 
         uis_scan_scf["user_incar_settings"].update({"NELECT": nelect})
 
-        scan_scf = JScanStaticFW(
-            structure=structure,
-            vasp_input_set_params=uis_scan_scf,
-            parents=scan_opt,
-            name="SCAN_scf",
-            vasptodb_kwargs={
-                "additional_fields": {
-                    "task_type": " JScanStaticFW",
-                    "charge_state": cs,
-                    "nupdown_set": nupdown,
-                },
-                "parse_dos": True,
-                "parse_chgcar": True
-            })
+        def scan_scf(parents):
+            fw = JScanStaticFW(
+                structure=structure,
+                vasp_input_set_params=uis_scan_scf,
+                parents=scan_opt,
+                name="SCAN_scf",
+                vasptodb_kwargs={
+                    "additional_fields": {
+                        "task_type": " JScanStaticFW",
+                        "charge_state": cs,
+                        "nupdown_set": nupdown,
+                    },
+                    "parse_dos": True,
+                    "parse_chgcar": True
+                })
+            return fw
 
         if task == "scan_opt":
-            fws = [scan_opt]
+            fws.append(scan_opt)
         elif task == "scan_scf":
-            scan_scf.parents = []
-            fws = [scan_scf]
+            fws.append(scan_scf(None))
         elif task == "scan_opt-scan_scf":
-            fws = [scan_opt, scan_scf]
+            fws.append(scan_opt)
+            fws.append(scan_scf(fws[-1]))
 
     wf_name = "{}:{}:q{}:sp{}".format("".join(structure.formula.split(" ")), wf_addition_name, charge_states, nupdowns)
     wf = Workflow(fws, name=wf_name)
