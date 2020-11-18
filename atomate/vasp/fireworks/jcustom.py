@@ -356,6 +356,8 @@ class JScanOptimizeFW(Firework):
             vasptodb_kwargs["additional_fields"] = {}
         vasptodb_kwargs["additional_fields"]["task_label"] = name
 
+        fw_name = "{}-{}".format(structure.composition.reduced_formula if structure else "unknown", name)
+
         t = []
         t.append(WriteVaspFromIOSet(structure=structure, vasp_input_set=vasp_input_set))
         t.append(
@@ -368,12 +370,17 @@ class JScanOptimizeFW(Firework):
                 half_kpts_first_relax=half_kpts_first_relax,
             )
         )
+
+        magmom = MPRelaxSet(structure).incar.get("MAGMOM", None)
+        if magmom:
+            t.append(ModifyIncar(incar_update={"MAGMOM": magmom}))
+
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
         super(JScanOptimizeFW, self).__init__(
             t,
             parents=parents,
-            name="{}-{}".format(structure.composition.reduced_formula, name),
+            name=fw_name,
             **kwargs
         )
 
@@ -445,6 +452,14 @@ class JScanStaticFW(Firework):
         else:
             raise ValueError("Must specify structure or previous calculation")
 
+        t.append(RmSelectiveDynPoscar())
+
+        magmom = MPRelaxSet(structure).incar.get("MAGMOM", None)
+        if magmom:
+            t.append(ModifyIncar(incar_update={"MAGMOM": magmom}))
+
+        t.append(ModifyIncar(incar_update={"EDIFF": 1E-5}))
+
         t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<"))
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
@@ -454,7 +469,7 @@ class JScanStaticFW(Firework):
 class JHSEStaticFW(Firework):
     def __init__(self, structure=None, name="HSE_scf", vasp_input_set=None, vasp_input_set_params=None,
                  vasp_cmd=VASP_CMD, prev_calc_dir=None, db_file=DB_FILE, vasptodb_kwargs=None,
-                 parents=None, cp_chargcar=True, force_gamma=True, **kwargs):
+                 parents=None, force_gamma=True, **kwargs):
         t = []
 
         vasp_input_set_params = vasp_input_set_params or {}
@@ -486,6 +501,8 @@ class JHSEStaticFW(Firework):
         if magmom:
             t.append(ModifyIncar(incar_update={"MAGMOM": magmom}))
 
+        t.append(ModifyIncar(incar_update={"EDIFF": 1E-5}))
+
         if vasp_input_set_params.get("user_incar_settings", {}):
             t.append(ModifyIncar(incar_update=vasp_input_set_params.get("user_incar_settings", {})))
 
@@ -503,9 +520,26 @@ class JHSEStaticFW(Firework):
 
 
 class JHSERelaxFW(Firework):
-    def __init__(self, structure=None, name="HSE_relax", vasp_input_set_params=None,
-                 vasp_cmd=VASP_CMD, db_file=DB_FILE, vasptodb_kwargs=None,
-                 parents=None, wall_time=None, force_gamma=True, **kwargs):
+    def __init__(
+            self,
+            structure=None,
+            name="HSE_relax",
+            vasp_input_set_params=None,
+            vasp_input_set=None,
+            vasp_cmd=VASP_CMD,
+            prev_calc_dir=None,
+            db_file=DB_FILE,
+            vasptodb_kwargs=None,
+            parents=None,
+            force_gamma=True,
+            job_type="Normal",
+            max_force_threshold=False,
+            ediffg=None,
+            auto_npar=">>auto_npar<<",
+            half_kpts_first_relax=HALF_KPOINTS_FIRST_RELAX,
+            **kwargs
+    ):
+
         t = []
         vasp_input_set_params = vasp_input_set_params or {}
         vasptodb_kwargs = vasptodb_kwargs or {}
@@ -515,14 +549,24 @@ class JHSERelaxFW(Firework):
 
         fw_name = "{}-{}".format(structure.composition.reduced_formula if structure else "unknown", name)
 
-
-        if parents:
-            t.append(CopyVaspOutputs(calc_loc=True)) #, additional_files=["CHGCAR"]))
-        else:
-            raise ValueError("Must specify the parent")
-        t.append(WriteVaspStaticFromPrev())
         hse_relax_vis_incar = MPHSERelaxSet(structure=structure).incar
-        t.append(ModifyIncar(incar_update=hse_relax_vis_incar))
+
+        if prev_calc_dir:
+            t.append(CopyVaspOutputs(calc_dir=prev_calc_dir, contcar_to_poscar=True))
+            t.append(WriteVaspHSEBSFromPrev(mode="uniform", reciprocal_density=None, kpoints_line_density=None))
+            t.append(ModifyIncar(incar_update=hse_relax_vis_incar))
+        elif parents:
+            if prev_calc_dir:
+                t.append(CopyVaspOutputs(calc_dir=prev_calc_dir, contcar_to_poscar=True))
+            t.append(WriteVaspHSEBSFromPrev(mode="uniform", reciprocal_density=None, kpoints_line_density=None))
+            t.append(ModifyIncar(incar_update=hse_relax_vis_incar))
+        elif structure:
+            vasp_input_set = vasp_input_set or MPHSERelaxSet(structure)
+            t.append(
+                WriteVaspFromIOSet(structure=structure, vasp_input_set=vasp_input_set)
+            )
+        else:
+            raise ValueError("Must specify structure or previous calculation")
 
         magmom = MPRelaxSet(structure).incar.get("MAGMOM", None)
         if magmom:
@@ -536,13 +580,18 @@ class JHSERelaxFW(Firework):
         else:
             t.append(WriteVaspFromPMGObjects(kpoints=MPHSERelaxSet(structure=structure, 
                                                                    force_gamma=force_gamma).kpoints.as_dict()))
-        
-        t.append(RunVaspCustodian(vasp_cmd=vasp_cmd,
-                                  job_type="normal",
-                                  max_force_threshold=False,
-                                  auto_npar=">>auto_npar<<",
-                                  max_errors=5,
-                                  wall_time=wall_time))
+
+        t.append(
+            RunVaspCustodian(
+                vasp_cmd=vasp_cmd,
+                job_type=job_type,
+                max_force_threshold=max_force_threshold,
+                ediffg=ediffg,
+                auto_npar=auto_npar,
+                half_kpts_first_relax=half_kpts_first_relax,
+            )
+        )
+
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
         super(JHSERelaxFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
