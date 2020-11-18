@@ -450,7 +450,7 @@ class JScanStaticFW(Firework):
         super(JScanStaticFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
 
 
-class HSEStaticFW(Firework):
+class JHSEStaticFW(Firework):
     def __init__(self, structure=None, name="HSE_scf", vasp_input_set_params=None,
                  vasp_cmd=VASP_CMD, prev_calc_dir=None, db_file=DB_FILE, vasptodb_kwargs=None,
                  parents=None, cp_chargcar=True, force_gamma=True, **kwargs):
@@ -491,10 +491,10 @@ class HSEStaticFW(Firework):
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, bandstructure_mode="uniform", parse_eigenvalues=True, parse_dos=True,
                           **vasptodb_kwargs))
-        super(HSEStaticFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
+        super(JHSEStaticFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
 
 
-class HSERelaxFW(Firework):
+class JHSERelaxFW(Firework):
     def __init__(self, structure=None, name="HSE_relax", vasp_input_set_params=None,
                  vasp_cmd=VASP_CMD, db_file=DB_FILE, vasptodb_kwargs=None,
                  parents=None, wall_time=None, force_gamma=True, **kwargs):
@@ -536,10 +536,10 @@ class HSERelaxFW(Firework):
                                   wall_time=wall_time))
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
-        super(HSERelaxFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
+        super(JSERelaxFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
 
 
-class HSEcDFTFW(Firework):
+class JHSEcDFTFW(Firework):
     def __init__(self, prev_calc_dir, structure=None, read_structure_from=None, name="HSE_cDFT",
                  vasp_input_set_params=None,
                  vasp_cmd=VASP_CMD, db_file=DB_FILE, vasptodb_kwargs=None,
@@ -574,10 +574,10 @@ class HSEcDFTFW(Firework):
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, bandstructure_mode="uniform", parse_dos=True,
                           parse_eigenvalues=True, **vasptodb_kwargs))
-        super(HSEcDFTFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
+        super(JHSEcDFTFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
 
 
-class PBEcDFTRelaxFW(Firework):
+class JPBEcDFTRelaxFW(Firework):
     def __init__(self, prev_calc_dir, vis="MPRelaxSet", structure=None, read_structure_from=None, name="cDFT_PBE_relax",
                  vasp_input_set_params=None, vasp_cmd=VASP_CMD, db_file=DB_FILE, vasptodb_kwargs=None,
                  parents=None, wall_time=None, **kwargs):
@@ -603,10 +603,10 @@ class PBEcDFTRelaxFW(Firework):
         t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<", max_errors=5, wall_time=wall_time))
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
-        super(PBEcDFTRelaxFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
+        super(JPBEcDFTRelaxFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
 
 
-class PBEcDFTStaticFW(Firework):
+class JPBEcDFTStaticFW(Firework):
     def __init__(self, structure, name="cDFT_PBE_scf",
                  vasp_input_set_params=None, vasp_cmd=VASP_CMD, db_file=DB_FILE, vasptodb_kwargs=None,
                  parents=None, wall_time=None, **kwargs):
@@ -633,4 +633,4 @@ class PBEcDFTStaticFW(Firework):
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, bandstructure_mode="uniform",
                           parse_dos=True, parse_eigenvalues=True, **vasptodb_kwargs))
-        super(PBEcDFTStaticFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
+        super(JPBEcDFTStaticFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
