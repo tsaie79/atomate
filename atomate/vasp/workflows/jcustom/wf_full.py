@@ -166,7 +166,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
     return wf
 
 
-def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, task, category, encut=520,
+def get_wf_full_scan(structure, charge_states, gamma_only, gamma_mesh, dos, nupdowns, task, category, encut=520,
                      vasptodb=None, wf_addition_name=None):
 
     vasptodb = vasptodb or {}
