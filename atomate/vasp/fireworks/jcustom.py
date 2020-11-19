@@ -360,6 +360,11 @@ class JScanOptimizeFW(Firework):
 
         t = []
         t.append(WriteVaspFromIOSet(structure=structure, vasp_input_set=vasp_input_set))
+
+        magmom = MPRelaxSet(structure).incar.get("MAGMOM", None)
+        if magmom:
+            t.append(ModifyIncar(incar_update={"MAGMOM": magmom}))
+
         t.append(
             RunVaspCustodian(
                 vasp_cmd=vasp_cmd,
@@ -370,10 +375,6 @@ class JScanOptimizeFW(Firework):
                 half_kpts_first_relax=half_kpts_first_relax,
             )
         )
-
-        magmom = MPRelaxSet(structure).incar.get("MAGMOM", None)
-        if magmom:
-            t.append(ModifyIncar(incar_update={"MAGMOM": magmom}))
 
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
@@ -393,6 +394,7 @@ class JScanStaticFW(Firework):
             vasp_input_set=None,
             vasp_input_set_params=None,
             vasp_cmd=VASP_CMD,
+            force_gamma=True,
             prev_calc_loc=True,
             prev_calc_dir=None,
             db_file=DB_FILE,
@@ -443,9 +445,7 @@ class JScanStaticFW(Firework):
                 )
             t.append(JWriteScanVaspStaticFromPrev(other_params=vasp_input_set_params))
         elif structure:
-            vasp_input_set = vasp_input_set or MPScanStaticSet(
-                structure, **vasp_input_set_params
-            )
+            vasp_input_set = vasp_input_set or MPScanStaticSet(structure)
             t.append(
                 WriteVaspFromIOSet(structure=structure, vasp_input_set=vasp_input_set)
             )
@@ -459,6 +459,15 @@ class JScanStaticFW(Firework):
             t.append(ModifyIncar(incar_update={"MAGMOM": magmom}))
 
         t.append(ModifyIncar(incar_update={"EDIFF": 1E-5}))
+
+        if vasp_input_set_params.get("user_incar_settings", {}):
+            t.append(ModifyIncar(incar_update=vasp_input_set_params.get("user_incar_settings", {})))
+
+        if vasp_input_set_params.get("user_kpoints_settings", {}):
+            t.append(WriteVaspFromPMGObjects(kpoints=vasp_input_set_params.get("user_kpoints_settings", {})))
+        else:
+            t.append(WriteVaspFromPMGObjects(
+                kpoints=MPHSERelaxSet(structure=structure, force_gamma=force_gamma).kpoints.as_dict()))
 
         t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<"))
         t.append(PassCalcLocs(name=name))

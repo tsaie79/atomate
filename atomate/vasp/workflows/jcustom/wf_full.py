@@ -11,7 +11,7 @@ from fireworks import Firework, LaunchPad, Workflow
 import numpy as np
 
 
-def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, category, encut=520,
+def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdowns, task, category, encut=520,
                     vasptodb=None, wf_addition_name=None):
 
     vasptodb = vasptodb or {}
@@ -72,6 +72,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, c
             name="PBE_relax",
             max_force_threshold=False,
             job_type="normal",
+            force_gamma=gamma_mesh,
             override_default_vasp_params={
                 "user_incar_settings": user_incar_settings,
                 "user_kpoints_settings": user_kpoints_settings
@@ -82,6 +83,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, c
         def hse_relax(parents):
             fw = JHSERelaxFW(
                 structure=structure,
+                force_gamma=gamma_mesh,
                 vasp_input_set_params={
                     "user_incar_settings": user_incar_settings,
                     "user_kpoints_settings": user_kpoints_settings
@@ -123,6 +125,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, c
         def hse_scf(parents):
             fw = JHSEStaticFW(
                 structure,
+                force_gamma=gamma_mesh,
                 vasp_input_set_params=uis_hse_scf,
                 parents=parents,
                 name="HSE_scf",
@@ -225,6 +228,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, task, 
             },
             job_type="normal",
             max_force_threshold=False,
+            force_gamma=gamma_mesh,
             name="SCAN_relax",
             vasptodb_kwargs={
                 "additional_fields": {
@@ -261,6 +265,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, task, 
                 structure=structure,
                 vasp_input_set_params=uis_scan_scf,
                 parents=parents,
+                force_gamma=gamma_mesh,
                 name="SCAN_scf",
                 vasptodb_kwargs={
                     "additional_fields": {
