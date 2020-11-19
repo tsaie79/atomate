@@ -11,7 +11,7 @@ from fireworks import Firework, LaunchPad, Workflow
 import numpy as np
 
 
-def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, catagory, encut=520,
+def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, category, encut=520,
                     vasptodb=None, wf_addition_name=None):
 
     vasptodb = vasptodb or {}
@@ -159,11 +159,11 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, c
     wf = add_modify_incar(wf)
     wf = preserve_fworker(wf)
     wf = add_namefile(wf)
-    wf = set_execution_options(wf, category=catagory)
+    wf = set_execution_options(wf, category=category)
     return wf
 
 
-def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, task, catagory, encut=520,
+def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, task, category, encut=520,
                      vasptodb=None, wf_addition_name=None):
 
     vasptodb = vasptodb or {}
@@ -285,7 +285,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, task, 
     wf = Workflow(fws, name=wf_name)
     vasptodb.update({"wf": [fw.name for fw in wf.fws]})
     wf = add_additional_fields_to_taskdocs(wf, vasptodb)
-    wf = set_execution_options(wf, category=catagory)
+    wf = set_execution_options(wf, category=category)
     wf = preserve_fworker(wf)
     wf = add_namefile(wf)
     wf = add_modify_incar(wf)
