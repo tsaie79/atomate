@@ -136,7 +136,9 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, c
             )
             return fw
 
-        if task == "hse_relax":
+        if task == "opt":
+            fws.append(opt)
+        elif task == "hse_relax":
             fws.append(hse_relax(parents=None))
         elif task == "hse_scf":
             fws.append(hse_scf(parents=None))
