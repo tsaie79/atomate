@@ -120,21 +120,6 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, c
 
         uis_hse_scf["user_incar_settings"].update({"NELECT": nelect})
 
-        # def hse_scf(parents):
-        #     fw = JHSEStaticFW(
-        #         structure,
-        #         vasp_input_set_params=uis_hse_scf,
-        #         parents=parents,
-        #         name="HSE_scf",
-        #         vasptodb_kwargs={
-        #             "additional_fields": {
-        #                 "task_type": "JHSEStaticFW",
-        #                 "charge_state": cs,
-        #                 "nupdown_set": nupdown
-        #             }
-        #         }
-        #     )
-        #     return fw
         def hse_scf(parents):
             fw = JHSEStaticFW(
                 structure,
@@ -150,6 +135,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, c
                 }
             )
             return fw
+
         if task == "opt":
             fws.append(opt)
         elif task == "hse_relax":
