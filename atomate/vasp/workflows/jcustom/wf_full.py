@@ -150,17 +150,17 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, c
             fws.append(hse_relax(parents=fws[-1]))
             fws.append(hse_scf(parents=fws[-1]))
 
-    wf_name = "{}:{}:q{}:sp{}".format("".join(structure.formula.split(" ")), wf_addition_name, charge_states, nupdowns)
+        wf_name = "{}:{}:q{}:sp{}".format("".join(structure.formula.split(" ")), wf_addition_name, charge_states, nupdowns)
 
-    wf = Workflow(fws, name=wf_name)
+        wf = Workflow(fws, name=wf_name)
 
-    vasptodb.update({"wf": [fw.name for fw in wf.fws]})
-    wf = add_additional_fields_to_taskdocs(wf, vasptodb)
-    wf = add_modify_incar(wf)
-    wf = preserve_fworker(wf)
-    wf = add_namefile(wf)
-    wf = set_execution_options(wf, category=catagory)
-    return wf
+        vasptodb.update({"wf": [fw.name for fw in wf.fws]})
+        wf = add_additional_fields_to_taskdocs(wf, vasptodb)
+        wf = add_modify_incar(wf)
+        wf = preserve_fworker(wf)
+        wf = add_namefile(wf)
+        wf = set_execution_options(wf, category=catagory)
+        return wf
 
 
 def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, task, catagory, encut=520,
