@@ -545,7 +545,7 @@ class JHSERelaxFW(Firework):
             vasptodb_kwargs=None,
             parents=None,
             force_gamma=True,
-            job_type="Normal",
+            job_type="normal",
             max_force_threshold=False,
             ediffg=None,
             auto_npar=">>auto_npar<<",
