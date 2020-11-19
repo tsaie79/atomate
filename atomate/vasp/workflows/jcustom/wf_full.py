@@ -216,7 +216,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, task, 
             user_kpoints_settings = None
 
         # FW1 Structure optimization firework
-        scan_opt = JScanOptimizeFW(
+        scan_relax = JScanOptimizeFW(
             structure=structure,
             override_default_vasp_params={
                 "user_incar_settings": user_incar_settings,
@@ -259,7 +259,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, task, 
             fw = JScanStaticFW(
                 structure=structure,
                 vasp_input_set_params=uis_scan_scf,
-                parents=scan_opt,
+                parents=parents,
                 name="SCAN_scf",
                 vasptodb_kwargs={
                     "additional_fields": {
@@ -272,12 +272,12 @@ def get_wf_full_scan(structure, charge_states, gamma_only, dos, nupdowns, task, 
                 })
             return fw
 
-        if task == "scan_opt":
-            fws.append(scan_opt)
+        if task == "scan_relax":
+            fws.append(scan_relax)
         elif task == "scan_scf":
             fws.append(scan_scf(None))
-        elif task == "scan_opt-scan_scf":
-            fws.append(scan_opt)
+        elif task == "scan_relax-scan_scf":
+            fws.append(scan_relax)
             fws.append(scan_scf(fws[-1]))
 
     wf_name = "{}:{}:q{}:sp{}".format("".join(structure.formula.split(" ")), wf_addition_name, charge_states, nupdowns)
