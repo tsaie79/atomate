@@ -135,33 +135,34 @@ def get_wf_full_hse(structure, charge_states, gamma_only, dos, nupdowns, task, c
         #         }
         #     )
         #     return fw
-        hse_scf = JHSEStaticFW(
-            structure,
-            vasp_input_set_params=uis_hse_scf,
-            parents=None,
-            name="HSE_scf",
-            vasptodb_kwargs={
-                "additional_fields": {
-                    "task_type": "JHSEStaticFW",
-                    "charge_state": cs,
-                    "nupdown_set": nupdown
+        def hse_scf(parents):
+            fw = JHSEStaticFW(
+                structure,
+                vasp_input_set_params=uis_hse_scf,
+                parents=parents,
+                name="HSE_scf",
+                vasptodb_kwargs={
+                    "additional_fields": {
+                        "task_type": "JHSEStaticFW",
+                        "charge_state": cs,
+                        "nupdown_set": nupdown
+                    }
                 }
-            }
-        )
-        fws = [hse_scf]
-        # if task == "opt":
-        #     fws.append(opt)
-        # elif task == "hse_relax":
-        #     fws.append(hse_relax(parents=None))
-        # elif task == "hse_scf":
-        #     fws.append(hse_scf(parents=None))
-        # elif task == "hse_relax-hse_scf":
-        #     fws.append(hse_relax(parents=None))
-        #     fws.append(hse_scf(fws[-1]))
-        # elif task == "opt-hse_relax-hse_scf":
-        #     fws.append(opt)
-        #     fws.append(hse_relax(parents=fws[-1]))
-        #     fws.append(hse_scf(parents=fws[-1]))
+            )
+            return fw
+        if task == "opt":
+            fws.append(opt)
+        elif task == "hse_relax":
+            fws.append(hse_relax(parents=None))
+        elif task == "hse_scf":
+            fws.append(hse_scf(parents=None))
+        elif task == "hse_relax-hse_scf":
+            fws.append(hse_relax(parents=None))
+            fws.append(hse_scf(fws[-1]))
+        elif task == "opt-hse_relax-hse_scf":
+            fws.append(opt)
+            fws.append(hse_relax(parents=fws[-1]))
+            fws.append(hse_scf(parents=fws[-1]))
 
     wf_name = "{}:{}:q{}:sp{}".format("".join(structure.formula.split(" ")), wf_addition_name, charge_states, nupdowns)
 
