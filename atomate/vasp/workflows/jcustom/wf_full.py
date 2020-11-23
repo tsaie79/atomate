@@ -105,7 +105,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
                 # "AMIX_MAG": 0.8,
                 # "BMIX": 0.0001,
                 # "BMIX_MAG": 0.0001,
-                "EDIFF": 1.0e-07,
+                "EDIFF": 1.0e-05,
                 "ENCUT": encut,
                 "ISMEAR": 0,
                 "LCHARG": False,
