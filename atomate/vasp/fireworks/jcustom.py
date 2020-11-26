@@ -465,7 +465,7 @@ class JScanStaticFW(Firework):
             t.append(WriteVaspFromPMGObjects(kpoints=vasp_input_set_params.get("user_kpoints_settings", {})))
         else:
             t.append(WriteVaspFromPMGObjects(
-                kpoints=MPHSERelaxSet(structure=structure, force_gamma=force_gamma).kpoints.as_dict()))
+                kpoints=MPScanRelaxSet(structure=structure, force_gamma=force_gamma).kpoints.as_dict()))
 
         t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<"))
         t.append(PassCalcLocs(name=name))
