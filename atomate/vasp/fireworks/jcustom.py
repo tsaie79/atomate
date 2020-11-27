@@ -611,10 +611,10 @@ class JHSERelaxFW(Firework):
 
 
 class JHSEcDFTFW(Firework):
-    def __init__(self, prev_calc_dir, structure=None, read_structure_from=None, name="HSE_cDFT",
+    def __init__(self, up_occupation, down_occupation, nbands, prev_calc_dir=None, structure=None, name="HSE_cDFT",
                  vasp_input_set_params=None,
                  vasp_cmd=VASP_CMD, db_file=DB_FILE, vasptodb_kwargs=None,
-                 parents=None, selective_dynamics=None, **kwargs):
+                 parents=None, prev_calc_loc=True, selective_dynamics=None, force_gamma=True, **kwargs):
 
         t = []
         vasp_input_set_params = vasp_input_set_params or {}
@@ -625,22 +625,44 @@ class JHSEcDFTFW(Firework):
 
         fw_name = "{}-{}".format(structure.composition.reduced_formula if structure else "unknown", name)
 
-        if read_structure_from:
-            t.append(CopyVaspOutputs(additional_files=["WAVECAR"], calc_dir=read_structure_from))
-        elif parents:
-            t.append(CopyVaspOutputs(additional_files=["WAVECAR"], calc_dir=True))
+        if prev_calc_dir:
+            t.append(CopyVaspOutputs(calc_dir=prev_calc_dir, additional_files=["WAVECAR"]))
             t.append(WriteVaspHSEBSFromPrev(mode="uniform", reciprocal_density=None, kpoints_line_density=None))
+            t.append(RmSelectiveDynPoscar())
+        elif parents:
+            if prev_calc_loc:
+                t.append(CopyVaspOutputs(calc_loc=prev_calc_loc, additional_files=["WAVECAR"]))
+            t.append(WriteVaspHSEBSFromPrev(mode="uniform", reciprocal_density=None, kpoints_line_density=None))
+            t.append(RmSelectiveDynPoscar())
         else:
-            t.append(CopyVaspOutputs(additional_files=["WAVECAR"], calc_dir=prev_calc_dir))
-            t.append(WriteVaspHSEBSFromPrev(prev_calc_dir=prev_calc_dir,
-                                            mode="uniform", reciprocal_density=None, kpoints_line_density=None))
+            raise ValueError("Must specify previous calculation or parent")
+
         magmom = MPRelaxSet(structure).incar.get("MAGMOM", None)
         if magmom:
             t.append(ModifyIncar(incar_update={"MAGMOM": magmom}))
-        t.append(ModifyIncar(incar_update=vasp_input_set_params.get("user_incar_settings", {})))
+
+        t.append(ModifyIncar(incar_update={
+            "ISMEAR": -2,
+            "FERWE": up_occupation,
+            "FERDO": down_occupation,
+            "NBANDS": nbands,
+            "LDIAG": False,
+            "LSUBROT": False,
+            "TIME": 0.4,
+            "ALGO": "All"
+        }))
+
+        if vasp_input_set_params.get("user_incar_settings", {}):
+            t.append(ModifyIncar(incar_update=vasp_input_set_params.get("user_incar_settings", {})))
+        if vasp_input_set_params.get("user_kpoints_settings", {}):
+            t.append(WriteVaspFromPMGObjects(kpoints=vasp_input_set_params.get("user_kpoints_settings", {})))
+        else:
+            t.append(WriteVaspFromPMGObjects(
+                kpoints=MPHSERelaxSet(structure=structure, force_gamma=force_gamma).kpoints.as_dict()))
+
         if selective_dynamics:
             t.append(SelectiveDynmaicPoscar(selective_dynamics=selective_dynamics, nsites=len(structure.sites)))
-        t.append(WriteVaspFromPMGObjects(kpoints=vasp_input_set_params.get("user_kpoints_settings", {})))
+
         t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<"))
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, bandstructure_mode="uniform", parse_dos=True,
