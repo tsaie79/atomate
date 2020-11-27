@@ -611,6 +611,7 @@ class JHSERelaxFW(Firework):
 
 
 class JHSEcDFTFW(Firework):
+
     def __init__(self, up_occupation, down_occupation, nbands, prev_calc_dir=None, structure=None, name="HSE_cDFT",
                  vasp_input_set_params=None,
                  vasp_cmd=VASP_CMD, db_file=DB_FILE, vasptodb_kwargs=None,
