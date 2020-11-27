@@ -642,17 +642,6 @@ class JHSEcDFTFW(Firework):
         if magmom:
             t.append(ModifyIncar(incar_update={"MAGMOM": magmom}))
 
-        t.append(ModifyIncar(incar_update={
-            "ISMEAR": -2,
-            "FERWE": up_occupation,
-            "FERDO": down_occupation,
-            "NBANDS": nbands,
-            "LDIAG": False,
-            "LSUBROT": False,
-            "TIME": 0.4,
-            "ALGO": "All"
-        }))
-
         if vasp_input_set_params.get("user_incar_settings", {}):
             t.append(ModifyIncar(incar_update=vasp_input_set_params.get("user_incar_settings", {})))
         if vasp_input_set_params.get("user_kpoints_settings", {}):
@@ -663,6 +652,17 @@ class JHSEcDFTFW(Firework):
 
         if selective_dynamics:
             t.append(SelectiveDynmaicPoscar(selective_dynamics=selective_dynamics, nsites=len(structure.sites)))
+
+            t.append(ModifyIncar(incar_update={
+                "ISMEAR": -2,
+                "FERWE": up_occupation,
+                "FERDO": down_occupation,
+                "NBANDS": nbands,
+                "LDIAG": False,
+                "LSUBROT": False,
+                "TIME": 0.4,
+                "ALGO": "All"
+            }))
 
         t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<"))
         t.append(PassCalcLocs(name=name))
