@@ -627,12 +627,12 @@ class JHSEcDFTFW(Firework):
         fw_name = "{}-{}".format(structure.composition.reduced_formula if structure else "unknown", name)
 
         if prev_calc_dir:
-            t.append(CopyVaspOutputs(calc_dir=prev_calc_dir, additional_files=["WAVECAR"]))
+            t.append(CopyVaspOutputs(calc_dir=prev_calc_dir, additional_files=["WAVECAR"], contcar_to_poscar=True))
             t.append(WriteVaspHSEBSFromPrev(mode="uniform", reciprocal_density=None, kpoints_line_density=None))
             t.append(RmSelectiveDynPoscar())
         elif parents:
             if prev_calc_loc:
-                t.append(CopyVaspOutputs(calc_loc=prev_calc_loc, additional_files=["WAVECAR"]))
+                t.append(CopyVaspOutputs(calc_loc=prev_calc_loc, additional_files=["WAVECAR"], contcar_to_poscar=True))
             t.append(WriteVaspHSEBSFromPrev(mode="uniform", reciprocal_density=None, kpoints_line_density=None))
             t.append(RmSelectiveDynPoscar())
         else:
