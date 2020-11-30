@@ -664,7 +664,8 @@ class JHSEcDFTFW(Firework):
             "ALGO": "All"
         }))
 
-        t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<"))
+        t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<",
+                                  job_type="double_relaxation_run"))
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, bandstructure_mode="uniform", parse_dos=True,
                           parse_eigenvalues=True, **vasptodb_kwargs))
