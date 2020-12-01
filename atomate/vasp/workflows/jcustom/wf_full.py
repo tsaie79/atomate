@@ -15,6 +15,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
                     vasptodb=None, wf_addition_name=None):
 
     encut = 1.3*max([potcar.enmax for potcar in MPHSERelaxSet(structure).potcar])
+    print(encut)
 
     vasptodb = vasptodb or {}
 
@@ -168,7 +169,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
     return wf
 
 
-def get_wf_full_scan(structure, charge_states, gamma_only, gamma_mesh, dos, nupdowns, task, category, encut=520,
+def get_wf_full_scan(structure, charge_states, gamma_only, gamma_mesh, dos, nupdowns, task, category,
                      vasptodb=None, wf_addition_name=None):
 
     encut = 1.3*max([potcar.enmax for potcar in MPScanRelaxSet(structure).potcar])
