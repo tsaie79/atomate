@@ -173,6 +173,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, gamma_mesh, dos, nupd
                      vasptodb=None, wf_addition_name=None):
 
     encut = 1.3*max([potcar.enmax for potcar in MPScanRelaxSet(structure).potcar])
+    print("SET ENCUT:{}".format(encut))
 
     vasptodb = vasptodb or {}
 
