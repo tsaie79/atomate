@@ -15,7 +15,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
                     vasptodb=None, wf_addition_name=None):
 
     encut = 1.3*max([potcar.enmax for potcar in MPHSERelaxSet(structure).potcar])
-    print(encut)
+    print("SET ENCUT:{}".format(encut))
 
     vasptodb = vasptodb or {}
 
