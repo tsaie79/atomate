@@ -497,7 +497,8 @@ class JHSEStaticFW(Firework):
         elif structure:
             vasp_input_set = vasp_input_set or MPHSERelaxSet(structure)
             incar_hse_bs = MPHSEBSSet(structure).incar
-            incar_hse_bs.pop("MAGMOM")
+            for x in ['@module', '@class', "MAGMOM"]:
+                incar_hse_bs.pop()
             t.append(
                 WriteVaspFromIOSet(
                     structure=structure,
