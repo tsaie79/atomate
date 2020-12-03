@@ -443,7 +443,7 @@ class JScanStaticFW(Firework):
                 t.append(CopyVaspOutputs(calc_loc=prev_calc_loc, contcar_to_poscar=True))
             t.append(JWriteScanVaspStaticFromPrev(other_params=vasp_input_set_params))
         elif structure:
-            vasp_input_set = vasp_input_set or MPScanStaticSet(structure)
+            vasp_input_set = vasp_input_set or "MPScanStaticSet"
             t.append(
                 WriteVaspFromIOSet(structure=structure, vasp_input_set=vasp_input_set)
             )
@@ -576,7 +576,7 @@ class JHSERelaxFW(Firework):
             t.append(WriteVaspHSEBSFromPrev(mode="uniform", reciprocal_density=None, kpoints_line_density=None))
             t.append(ModifyIncar(incar_update=hse_relax_vis_incar))
         elif structure:
-            vasp_input_set = vasp_input_set or MPHSERelaxSet(structure)
+            vasp_input_set = vasp_input_set or "MPHSERelaxSet"
             t.append(
                 WriteVaspFromIOSet(structure=structure, vasp_input_set=vasp_input_set)
             )
