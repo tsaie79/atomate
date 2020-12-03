@@ -667,7 +667,7 @@ class JHSEcDFTFW(Firework):
         }))
 
         t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<",
-                                  job_type=job_type, max_force_threshold=max_force_threshold, handler_group="no_handler"))
+                                  job_type=job_type, max_force_threshold=max_force_threshold))
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, bandstructure_mode="uniform", **vasptodb_kwargs))
         super(JHSEcDFTFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
