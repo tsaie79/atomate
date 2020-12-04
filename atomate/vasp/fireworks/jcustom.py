@@ -661,7 +661,7 @@ class JHSEcDFTFW(Firework):
             "FERDO": down_occupation,
             "NBANDS": nbands,
             "LDIAG": False,
-            "LSUBROT": True,
+            "LSUBROT": False,
             "ALGO": "All"
         }))
 
