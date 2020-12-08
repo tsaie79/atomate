@@ -614,7 +614,8 @@ class JHSERelaxFW(Firework):
 
 class JHSEcDFTFW(Firework):
 
-    def __init__(self, up_occupation, down_occupation, nbands, prev_calc_dir=None, structure=None, name="HSE_cDFT",
+    def __init__(self, up_occupation, down_occupation, nbands, prev_calc_dir=None, structure=None, specific_structure=None,
+                 name="HSE_cDFT",
                  vasp_input_set_params=None, job_type="normal", max_force_threshold=None,
                  vasp_cmd=VASP_CMD, db_file=DB_FILE, vasptodb_kwargs=None,
                  parents=None, prev_calc_loc=True, selective_dynamics=None, force_gamma=True, **kwargs):
@@ -631,6 +632,8 @@ class JHSEcDFTFW(Firework):
         if prev_calc_dir:
             t.append(CopyVaspOutputs(calc_dir=prev_calc_dir, additional_files=["WAVECAR"], contcar_to_poscar=True))
             t.append(WriteVaspHSEBSFromPrev(mode="uniform", reciprocal_density=None, kpoints_line_density=None))
+            if specific_structure:
+                t.append(WriteVaspFromPMGObjects(poscar=specific_structure))
             t.append(RmSelectiveDynPoscar())
         elif parents:
             if prev_calc_loc:
