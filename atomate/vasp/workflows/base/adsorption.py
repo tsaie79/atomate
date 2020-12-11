@@ -226,7 +226,7 @@ def get_wf_slab(slab, include_bulk_opt=False, adsorbates=None,
     if add_molecules_in_box:
         molecule_wf = get_wf_molecules(adsorbates, db_file=db_file,
                                        vasp_cmd=vasp_cmd)
-        wf.append_wf(molecule_wf)
+        wf.append_wf(molecule_wf, [fw.fw_id for fw in molecule_wf.fws])
 
     return wf
 
