@@ -231,7 +231,7 @@ def get_wf_slab(slab, include_bulk_opt=False, adsorbates=None,
     return wf
 
 
-def get_wf_molecules(molecules, vasp_input_set=None, db_file=None,
+def get_wf_molecules(molecules, box_width, vasp_input_set=None, db_file=None,
                      vasp_cmd="vasp", name=""):
     """
     Args:
@@ -248,8 +248,8 @@ def get_wf_molecules(molecules, vasp_input_set=None, db_file=None,
 
     for molecule in molecules:
         # molecule in box
-        m_struct = molecule.get_boxed_structure(15, 15, 15,
-                                                offset=np.array([7.5, 7.5, 7.5]))
+        m_struct = molecule.get_boxed_structure(box_width, box_width, box_width,
+                                                offset=np.array([box_width/2, box_width/2, box_width/2]))
         vis = vasp_input_set or MPSurfaceSet(m_struct)
         fws.append(OptimizeFW(structure=molecule, job_type="normal",
                               vasp_input_set=vis, db_file=db_file,
