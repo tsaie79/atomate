@@ -248,8 +248,8 @@ def get_wf_molecules(molecules, vasp_input_set=None, db_file=None,
 
     for molecule in molecules:
         # molecule in box
-        m_struct = molecule.get_boxed_structure(10, 10, 10,
-                                                offset=np.array([5, 5, 5]))
+        m_struct = molecule.get_boxed_structure(15, 15, 15,
+                                                offset=np.array([7.5, 7.5, 7.5]))
         vis = vasp_input_set or MPSurfaceSet(m_struct)
         fws.append(OptimizeFW(structure=molecule, job_type="normal",
                               vasp_input_set=vis, db_file=db_file,
