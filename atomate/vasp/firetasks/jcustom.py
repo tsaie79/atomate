@@ -221,9 +221,10 @@ class JFileTransferTask(FiretaskBase):
         for f in self["files"]:
             try:
                 if "all" == f:
-                    src = "/".join(os.getcwd().split("/")[-3:])
+                    src = os.path.join(os.getcwd().split("/")[-3:][0], os.getcwd().split("/")[-3:][-1])
                     dest = os.path.join(self["dest"], src)
-                    sftp.mkdir(dest)
+                    for d in src.split("/"):
+                        sftp.mkdir(d)
                     for file in glob("*"):
                         sftp.put(file, os.path.join(dest, file))
                 else:
@@ -255,7 +256,7 @@ class JFileTransferTask(FiretaskBase):
                         FileTransferTask.fn_list[mode](src, dest)
 
             except:
-                os.traceback.print_exc()
+                traceback.print_exc()
                 if max_retry:
 
                     # we want to avoid hammering either the local or remote machine
