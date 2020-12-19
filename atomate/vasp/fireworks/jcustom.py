@@ -1,4 +1,4 @@
-import warnings
+import warnings, os
 
 from fireworks import Firework
 
@@ -53,7 +53,7 @@ from atomate.vasp.firetasks.write_inputs import (
 )
 from atomate.vasp.firetasks.neb_tasks import WriteNEBFromImages, WriteNEBFromEndpoints
 from atomate.vasp.firetasks.jcustom import RmSelectiveDynPoscar, SelectiveDynmaicPoscar, \
-    JWriteScanVaspStaticFromPrev, JWriteMVLGWFromPrev
+    JWriteScanVaspStaticFromPrev, JWriteMVLGWFromPrev, JFileTransferTask
 from atomate.vasp.config import VASP_CMD, DB_FILE
 
 class JOptimizeFW(Firework):
@@ -123,10 +123,17 @@ class JOptimizeFW(Firework):
                 half_kpts_first_relax=half_kpts_first_relax,
             )
         )
+        t.append(FileTransferTask(
+            mode="rtransfer",
+            files=["POSCAR.orig.gz"],
+            dest="/home/jengyuantsai/test_scp_fw/",
+            sever="localhost",
+            user="jengyuantsai",
+            key_filename=os.path.join(os.path.expanduser("~"), ".ssh", "id_rsa")
+        ))
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
         super(JOptimizeFW, self).__init__(
-            t,
             parents=parents,
             name="{}-{}".format(structure.composition.reduced_formula, name),
             **kwargs
