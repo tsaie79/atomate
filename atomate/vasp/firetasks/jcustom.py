@@ -166,6 +166,7 @@ class JWriteMVLGWFromPrev(FiretaskBase):
 
         vis.write_input(".")
 
+@explicit_serialize
 class JFileTransferTask(FiretaskBase):
     """
     A Firetask to Transfer files. Note that
