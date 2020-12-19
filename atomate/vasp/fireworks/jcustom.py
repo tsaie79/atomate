@@ -129,7 +129,7 @@ class JOptimizeFW(Firework):
             dest="/home/jengyuantsai/test_scp_fw/",
             sever="localhost",
             user="jengyuantsai",
-            key_filename=os.path.join(os.path.expanduser("~"), ".ssh", "id_rsa")
+            key_filename=os.path.expanduser(os.path.join("~", ".ssh", "id_rsa"))
         ))
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
