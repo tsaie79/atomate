@@ -134,7 +134,7 @@ class JOptimizeFW(Firework):
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
         super(JOptimizeFW, self).__init__(
-            t
+            t,
             parents=parents,
             name="{}-{}".format(structure.composition.reduced_formula, name),
             **kwargs
