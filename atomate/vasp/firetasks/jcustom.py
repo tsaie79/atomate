@@ -7,6 +7,11 @@ import shutil
 import gzip
 import os
 import re
+import traceback
+from glob import glob
+import time
+from monty.shutil import compress_dir, decompress_dir
+
 
 @explicit_serialize
 class RmSelectiveDynPoscar(FiretaskBase):
@@ -250,7 +255,7 @@ class JFileTransferTask(FiretaskBase):
                         FileTransferTask.fn_list[mode](src, dest)
 
             except:
-                traceback.print_exc()
+                os.traceback.print_exc()
                 if max_retry:
 
                     # we want to avoid hammering either the local or remote machine
