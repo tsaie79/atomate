@@ -127,7 +127,7 @@ class JOptimizeFW(Firework):
             mode="rtransfer",
             files=["all"],
             dest="/home/jengyuantsai/test_scp_fw/",
-            sever="localhost",
+            server="localhost",
             user="jengyuantsai",
             key_filename=os.path.expanduser(os.path.join("~", ".ssh", "id_rsa"))
         ))
