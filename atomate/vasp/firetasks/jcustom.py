@@ -183,7 +183,6 @@ class JFileTransferTask(FiretaskBase):
         - max_retry: (int) number of times to retry failed transfers; defaults to `0` (no retries)
         - retry_delay: (int) number of seconds to wait between retries; defaults to `10`
     """
-    _fw_name = 'FileTransferTask'
     required_params = ["mode", "files", "dest"]
     optional_params = ["server", "user", "key_filename", "max_retry", "retry_delay"]
 
