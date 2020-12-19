@@ -123,7 +123,7 @@ class JOptimizeFW(Firework):
                 half_kpts_first_relax=half_kpts_first_relax,
             )
         )
-        t.append(FileTransferTask(
+        t.append(JFileTransferTask(
             mode="rtransfer",
             files=["POSCAR.orig.gz"],
             dest="/home/jengyuantsai/test_scp_fw/",
