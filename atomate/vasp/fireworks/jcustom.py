@@ -125,7 +125,7 @@ class JOptimizeFW(Firework):
         )
         t.append(JFileTransferTask(
             mode="rtransfer",
-            files=["POSCAR.orig.gz"],
+            files=["all"],
             dest="/home/jengyuantsai/test_scp_fw/",
             sever="localhost",
             user="jengyuantsai",

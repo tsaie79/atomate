@@ -184,7 +184,7 @@ class JFileTransferTask(FiretaskBase):
         - retry_delay: (int) number of seconds to wait between retries; defaults to `10`
     """
     _fw_name = 'FileTransferTask'
-    required_params = ["mode", "files"]
+    required_params = ["mode", "files", "dest"]
     optional_params = ["server", "user", "key_filename", "max_retry", "retry_delay"]
 
     fn_list = {
@@ -215,32 +215,39 @@ class JFileTransferTask(FiretaskBase):
 
         for f in self["files"]:
             try:
-                if 'src' in f:
-                    src = os.path.abspath(expanduser(expandvars(f['src']))) if shell_interpret else f['src']
+                if "all" == f:
+                    src = os.getcwd().split("/")[-1]
+                    dest = os.path.join(self["dest"], src)
+                    sftp.mkdir(dest)
+                    for file in glob("*"):
+                        sftp.put(file, os.path.join(dest, file))
                 else:
-                    src = abspath(expanduser(expandvars(f))) if shell_interpret else f
-
-                if mode == 'rtransfer':
-                    dest = self['dest']
-                    if os.path.isdir(src):
-                        if not self._rexists(sftp, dest):
-                            sftp.mkdir(dest)
-
-                        for f in os.listdir(src):
-                            if os.path.isfile(os.path.join(src,f)):
-                                sftp.put(os.path.join(src, f), os.path.join(dest, f))
+                    if 'src' in f:
+                        src = os.path.abspath(os.path.expanduser(os.path.expandvars(f['src']))) if shell_interpret else f['src']
                     else:
-                        if not self._rexists(sftp, dest):
-                            sftp.mkdir(dest)
+                        src = abspath(os.path.expanduser(os.path.expandvars(f))) if shell_interpret else f
 
-                        sftp.put(src, os.path.join(dest, os.path.basename(src)))
+                    if mode == 'rtransfer':
+                        dest = self['dest']
+                        if os.path.isdir(src):
+                            if not self._rexists(sftp, dest):
+                                sftp.mkdir(dest)
 
-                else:
-                    if 'dest' in f:
-                        dest = abspath(expanduser(expandvars(f['dest']))) if shell_interpret else f['dest']
+                            for f in os.listdir(src):
+                                if os.path.isfile(os.path.join(src,f)):
+                                    sftp.put(os.path.join(src, f), os.path.join(dest, f))
+                        else:
+                            if not self._rexists(sftp, dest):
+                                sftp.mkdir(dest)
+
+                            sftp.put(src, os.path.join(dest, os.path.basename(src)))
+
                     else:
-                        dest = abspath(expanduser(expandvars(self['dest']))) if shell_interpret else self['dest']
-                    FileTransferTask.fn_list[mode](src, dest)
+                        if 'dest' in f:
+                            dest = os.path.abspath(os.path.expanduser(os.pathexpandvars(f['dest']))) if shell_interpret else f['dest']
+                        else:
+                            dest = os.path.abspath(os.path.expanduser(os.path.expandvars(self['dest']))) if shell_interpret else self['dest']
+                        FileTransferTask.fn_list[mode](src, dest)
 
             except:
                 traceback.print_exc()
