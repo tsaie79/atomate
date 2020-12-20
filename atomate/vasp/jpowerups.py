@@ -1,0 +1,66 @@
+from atomate.common.firetasks.glue_tasks import DeleteFiles
+from atomate.utils.utils import get_meta_from_structure, get_fws_and_tasks
+from atomate.vasp.config import (
+    ADD_NAMEFILE,
+    SCRATCH_DIR,
+    ADD_MODIFY_INCAR,
+    GAMMA_VASP_CMD,
+)
+from atomate.vasp.firetasks.jcustom import JFileTransferTask
+from atomate.vasp.firetasks.glue_tasks import CheckStability, CheckBandgap
+from atomate.vasp.firetasks.lobster_tasks import RunLobsterFake
+from atomate.vasp.firetasks.neb_tasks import RunNEBVaspFake
+from atomate.vasp.firetasks.parse_outputs import JsonToDb
+from atomate.vasp.firetasks.run_calc import (
+    RunVaspCustodian,
+    RunVaspFake,
+    RunVaspDirect,
+    RunNoVasp,
+)
+from atomate.vasp.firetasks.write_inputs import ModifyIncar, ModifyPotcar, ModifyKpoints
+from fireworks import Workflow, FileWriteTask
+from fireworks.core.firework import Tracker
+from fireworks.utilities.fw_utilities import get_slug
+from pymatgen import Structure
+
+__author__ = "Jeng-Yuan Tsai"
+__email__ = "tsaie79@gmail.com"
+
+
+def clean_up_files(
+        original_wf,
+        root_path,
+        proj_name,
+        calc_name,
+        fw_name_constraint=None,
+        task_name_constraint="RunVasp",
+):
+    """
+    SCP ALL files to local computer
+
+    Args:
+        original_wf (Workflow)
+        root_path (str): "/home/jengyuantsai/test_scp_fw/"
+        proj_name (str): "/home/jengyuantsai/test_scp_fw/defect_db/"
+        calc_name (str): "/home/jengyuantsai/test_scp_fw/defect_db/binary_vac_AB/"
+        fw_name_constraint (str): pattern for fireworks to clean up files after
+        task_name_constraint (str): pattern for firetask to clean up files
+
+    Returns:
+       Workflow
+    """
+    idx_list = get_fws_and_tasks(
+        original_wf,
+        fw_name_constraint=fw_name_constraint,
+        task_name_constraint=task_name_constraint,
+    )
+    for idx_fw, idx_t in idx_list:
+        original_wf.fws[idx_fw].tasks.insert(idx_t + 1, JFileTransferTask(
+            mode="rtransfer",
+            files=["all"],
+            dest=os.path.join(root_path, proj_name, calc_name),
+            server="localhost",
+            user="jengyuantsai",
+            key_filename=os.path.expanduser(os.path.join("~", ".ssh", "id_rsa"))))
+
+    return original_wf
