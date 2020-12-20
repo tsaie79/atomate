@@ -23,6 +23,8 @@ from fireworks.core.firework import Tracker
 from fireworks.utilities.fw_utilities import get_slug
 from pymatgen import Structure
 
+import os
+
 __author__ = "Jeng-Yuan Tsai"
 __email__ = "tsaie79@gmail.com"
 
