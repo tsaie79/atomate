@@ -174,11 +174,14 @@ class JWriteMVLGWFromPrev(FiretaskBase):
 @explicit_serialize
 class JFileTransferTask(FiretaskBase):
     """
-    A Firetask to Transfer files. Note that
+    A Firetask to Transfer files.
+
+    Before using, it must already have successful scp from login to local computer, i.e.
+    in OWLS: scp -P 12346 any_file jengyuantsai@localhost:any_path
 
     Required params:
         - mode: (str) - move, mv, copy, cp, copy2, copytree, copyfile, rtransfer
-        - files: ([str]) or ([(str, str)]) - list of source files, or dictionary containing
+        - files: (["all"]), ([str]) or ([(str, str)]) - list of source files, or dictionary containing
                 'src' and 'dest' keys
         - dest: (str) destination directory, if not specified within files parameter (else optional)
 
