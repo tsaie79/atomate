@@ -123,14 +123,6 @@ class JOptimizeFW(Firework):
                 half_kpts_first_relax=half_kpts_first_relax,
             )
         )
-        # t.append(JFileTransferTask(
-        #     mode="rtransfer",
-        #     files=["all"],
-        #     dest="/home/jengyuantsai/test_scp_fw/",
-        #     server="localhost",
-        #     user="jengyuantsai",
-        #     key_filename=os.path.expanduser(os.path.join("~", ".ssh", "id_rsa"))
-        # ))
         t.append(PassCalcLocs(name=name))
         t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
         super(JOptimizeFW, self).__init__(
