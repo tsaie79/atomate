@@ -27,7 +27,7 @@ __author__ = "Jeng-Yuan Tsai"
 __email__ = "tsaie79@gmail.com"
 
 
-def clean_up_files(
+def scp_files(
         original_wf,
         root_path,
         proj_name,
