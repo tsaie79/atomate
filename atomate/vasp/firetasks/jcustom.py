@@ -3,6 +3,7 @@ from pymatgen.io.vasp.inputs import Structure, Poscar
 from pymatgen.io.vasp.sets import MPStaticSet, MVLGWSet
 from atomate.common.firetasks.glue_tasks import get_calc_loc, PassResult, \
     CopyFiles, CopyFilesFromCalcLoc
+from atomate.vasp.database import VaspCalcDb
 import shutil
 import gzip
 import os
@@ -289,3 +290,22 @@ class JFileTransferTask(FiretaskBase):
             raise
         else:
             return True
+
+@explicit_serialize
+class JWriteChgcarFromDB(FiretaskBase):
+    """
+    A Firetask to write files:
+    Required params:
+        - files_to_write: ([{filename:(str), contents:(str)}]) List of dicts with filenames
+            and contents
+    Optional params:
+        - dest: (str) Shared path for files
+    """
+    required_params = ["db_file", "task_id"]
+    optional_params = ["dest"]
+
+    def run_task(self, fw_spec):
+        pth = self.get("dest", os.getcwd())
+        db = VaspCalcDb.from_db_file(self["db_file"])
+        io = db.get_chgcar(self["task_id"])
+        io.write_file("CHGCAR")
