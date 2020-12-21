@@ -465,10 +465,6 @@ class JScanStaticFW(Firework):
         else:
             t.append(WriteVaspFromPMGObjects(
                 kpoints=MPRelaxSet(structure=structure, force_gamma=force_gamma).kpoints.as_dict()))
-        t.append(JWriteChgcarFromDB(
-            db_file=os.path.expanduser(os.path.expanduser("~", "config/project/defect_db/binary_defect/db.json")),
-            task_id
-        ))
         t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<"))
         t.append(PassCalcLocs(name=name))
         # t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))

@@ -67,13 +67,13 @@ def scp_files(
 
     return original_wf
 
-def write_chgcar_from_db(original_wf, db_file, task_id, fw_name_constraint=None):
+def write_inputs_from_db(original_wf, db_file, task_id, fw_name_constraint=None):
+
     idx_list = get_fws_and_tasks(
         original_wf,
         fw_name_constraint=fw_name_constraint,
         task_name_constraint="RunVasp",
     )
     for idx_fw, idx_t in idx_list:
-        original_wf.fws[idx_fw].tasks.insert(idx_t - 1, JWriteChgcarFromDB(db_file=db_file, task_id=task_id))
-
+        original_wf.fws[idx_fw].tasks.insert(idx_t - 1, J(db_file=db_file, task_id=task_id))
     return original_wf

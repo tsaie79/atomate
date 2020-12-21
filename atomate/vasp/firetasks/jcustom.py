@@ -292,7 +292,7 @@ class JFileTransferTask(FiretaskBase):
             return True
 
 @explicit_serialize
-class JWriteChgcarFromDB(FiretaskBase):
+class JWriteInputsFromDB(FiretaskBase):
     """
     A Firetask to write files:
     Required params:
@@ -301,11 +301,23 @@ class JWriteChgcarFromDB(FiretaskBase):
     Optional params:
         - dest: (str) Shared path for files
     """
-    required_params = ["db_file", "task_id"]
-    optional_params = ["dest"]
+    required_params = ["db_file", "task_id", "write_chgcar"]
+    optional_params = ["dest", "modify_incar"]
 
     def run_task(self, fw_spec):
         pth = self.get("dest", os.getcwd())
         db = VaspCalcDb.from_db_file(self["db_file"])
-        chgcar = db.get_chgcar(self["task_id"])
-        chgcar.write_file("CHGCAR")
+
+        poscar = Poscar.from_dict(e["orig_inputs"]["poscar"])
+        poscar.write_file(os.path.join(pth, "POSCAR"))
+
+        incar = Incar.from_dict(e["orig_inputs"]["incar"])
+        incar.update(self.get("modify_incar", {}))
+        incar.write_file(os.path.join(pth, "INCAR"))
+
+        kpoints = Kpoints.from_dict(e["orig_inputs"]["kpoints"])
+        kpoints.write_file(os.path.join(pth, "KPOINTS"))
+
+        if self.get("write_chgcar"):
+            chgcar = db.get_chgcar(self["task_id"])
+            chgcar.write_file(os.path.join(pth, "CHGCAR"))
