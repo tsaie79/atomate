@@ -6,7 +6,7 @@ from atomate.vasp.config import (
     ADD_MODIFY_INCAR,
     GAMMA_VASP_CMD,
 )
-from atomate.vasp.firetasks.jcustom import JFileTransferTask, JWriteChgcarFromDB
+from atomate.vasp.firetasks.jcustom import JFileTransferTask, JWriteInputsFromDB
 from atomate.vasp.firetasks.glue_tasks import CheckStability, CheckBandgap
 from atomate.vasp.firetasks.lobster_tasks import RunLobsterFake
 from atomate.vasp.firetasks.neb_tasks import RunNEBVaspFake
@@ -67,7 +67,7 @@ def scp_files(
 
     return original_wf
 
-def write_inputs_from_db(original_wf, db_file, task_id, fw_name_constraint=None):
+def write_inputs_from_db(original_wf, db_file, task_id, modify_incar, write_chgcar=True, fw_name_constraint=None):
 
     idx_list = get_fws_and_tasks(
         original_wf,
@@ -75,5 +75,7 @@ def write_inputs_from_db(original_wf, db_file, task_id, fw_name_constraint=None)
         task_name_constraint="RunVasp",
     )
     for idx_fw, idx_t in idx_list:
-        original_wf.fws[idx_fw].tasks.insert(idx_t - 1, J(db_file=db_file, task_id=task_id))
+        original_wf.fws[idx_fw].tasks.insert(idx_t - 1, JWriteInputsFromDB(db_file=db_file, task_id=task_id,
+                                                                           write_chgcar=write_chgcar,
+                                                                           modify_incar=modify_incar))
     return original_wf
