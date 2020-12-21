@@ -307,6 +307,7 @@ class JWriteInputsFromDB(FiretaskBase):
     def run_task(self, fw_spec):
         pth = self.get("dest", os.getcwd())
         db = VaspCalcDb.from_db_file(self["db_file"])
+        e = db.collection.find_one({"task_id": self.get("task_id")})
 
         poscar = Poscar.from_dict(e["orig_inputs"]["poscar"])
         poscar.write_file(os.path.join(pth, "POSCAR"))
