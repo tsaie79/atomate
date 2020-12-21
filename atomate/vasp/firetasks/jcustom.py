@@ -227,7 +227,7 @@ class JFileTransferTask(FiretaskBase):
             try:
                 if "all" == f:
                     src = os.getcwd().split("/")[-1]
-                    dest = os.path.join(self["dest"], src)
+                    dest = os.path.join(self["dest"])
                     # sftp.mkdir(dest)
 
                     for file in glob("*"):
