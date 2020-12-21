@@ -1,5 +1,6 @@
 from fireworks import FiretaskBase, explicit_serialize
-from pymatgen.io.vasp.inputs import Structure, Poscar
+from pymatgen.io.vasp.inputs import *
+from pymatgen.io.vasp.outputs import Chgcar
 from pymatgen.io.vasp.sets import MPStaticSet, MVLGWSet
 from atomate.common.firetasks.glue_tasks import get_calc_loc, PassResult, \
     CopyFiles, CopyFilesFromCalcLoc
