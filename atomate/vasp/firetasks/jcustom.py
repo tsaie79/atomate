@@ -231,7 +231,11 @@ class JFileTransferTask(FiretaskBase):
                     # sftp.mkdir(dest)
 
                     for file in glob("*"):
-                        sftp.put(file, os.path.join(dest, file))
+                        try:
+                            sftp.put(file, os.path.join(dest, file))
+                        except FileNotFoundError:
+                            sftp.mkdir(dest)
+                            sftp.put(file, os.path.join(dest, file))
                 else:
                     if 'src' in f:
                         src = os.path.abspath(os.path.expanduser(os.path.expandvars(f['src']))) if shell_interpret else f['src']
