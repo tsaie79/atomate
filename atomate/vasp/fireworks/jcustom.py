@@ -52,8 +52,7 @@ from atomate.vasp.firetasks.write_inputs import (
     ModifyIncar
 )
 from atomate.vasp.firetasks.neb_tasks import WriteNEBFromImages, WriteNEBFromEndpoints
-from atomate.vasp.firetasks.jcustom import RmSelectiveDynPoscar, SelectiveDynmaicPoscar, \
-    JWriteScanVaspStaticFromPrev, JWriteMVLGWFromPrev, JFileTransferTask
+from atomate.vasp.firetasks.jcustom import *
 from atomate.vasp.config import VASP_CMD, DB_FILE
 
 class JOptimizeFW(Firework):
@@ -390,7 +389,7 @@ class JScanStaticFW(Firework):
     def __init__(
             self,
             structure=None,
-            name="JScan static",
+            name="SCAN_scf",
             vasp_input_set=None,
             vasp_input_set_params=None,
             vasp_cmd=VASP_CMD,
@@ -466,7 +465,10 @@ class JScanStaticFW(Firework):
         else:
             t.append(WriteVaspFromPMGObjects(
                 kpoints=MPRelaxSet(structure=structure, force_gamma=force_gamma).kpoints.as_dict()))
-
+        t.append(JWriteChgcarFromDB(
+            db_file=os.path.expanduser(os.path.expanduser("~", "config/project/defect_db/binary_defect/db.json")),
+            task_id
+        ))
         t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<"))
         t.append(PassCalcLocs(name=name))
         # t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))

@@ -307,5 +307,5 @@ class JWriteChgcarFromDB(FiretaskBase):
     def run_task(self, fw_spec):
         pth = self.get("dest", os.getcwd())
         db = VaspCalcDb.from_db_file(self["db_file"])
-        io = db.get_chgcar(self["task_id"])
-        io.write_file("CHGCAR")
+        chgcar = db.get_chgcar(self["task_id"])
+        chgcar.write_file("CHGCAR")
