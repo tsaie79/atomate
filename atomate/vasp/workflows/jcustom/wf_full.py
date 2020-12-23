@@ -193,7 +193,7 @@ def get_wf_full_scan(structure, charge_states, gamma_only, gamma_mesh, dos, nupd
             "ISMEAR": 0,
             "SIGMA": 0.001,
             "EDIFFG": -0.01,
-            "LCHARG": True,
+            "LCHARG": False,
             "NUPDOWN": nupdown,
         }
 
@@ -245,9 +245,9 @@ def get_wf_full_scan(structure, charge_states, gamma_only, gamma_mesh, dos, nupd
                     "charge_state": cs,
                     "nupdown_set": nupdown,
                 },
-                "parse_dos": True,
-                "parse_eigenvalues": True,
-                "parse_chgcar": True
+                "parse_dos": False,
+                "parse_eigenvalues": False,
+                "parse_chgcar": False
             }
         )
 
@@ -258,7 +258,8 @@ def get_wf_full_scan(structure, charge_states, gamma_only, gamma_mesh, dos, nupd
                 "EDIFF": 1e-05,
                 "ENCUT": encut,
                 "ISMEAR": 0,
-                "LCHARG": True,
+                "LCHARG": False,
+                "LWAVE": True,
                 "NUPDOWN": nupdown,
             },
             "user_kpoints_settings": user_kpoints_settings
@@ -283,7 +284,8 @@ def get_wf_full_scan(structure, charge_states, gamma_only, gamma_mesh, dos, nupd
                         "nupdown_set": nupdown,
                     },
                     "parse_dos": True,
-                    "parse_chgcar": True
+                    "parse_eigenvalues": True,
+                    "parse_chgcar": False
                 })
             return fw
 
