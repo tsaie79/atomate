@@ -467,7 +467,7 @@ class JScanStaticFW(Firework):
                 kpoints=MPRelaxSet(structure=structure, force_gamma=force_gamma).kpoints.as_dict()))
         t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<"))
         t.append(PassCalcLocs(name=name))
-        # t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
+        t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
         super(JScanStaticFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
 
 
