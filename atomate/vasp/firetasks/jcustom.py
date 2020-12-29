@@ -178,7 +178,8 @@ class JFileTransferTask(FiretaskBase):
     """
     A Firetask to Transfer files.
 
-    Before using, it must already have successful scp from login to local computer, i.e.
+    Before using, cp login/.ssh/id_rsa.pub to local/.ssh/authorized_keys
+    then, it must already have successful scp from login to local computer, i.e.
     in OWLS: scp -P 12346 any_file jengyuantsai@localhost:any_path
 
     Required params:
