@@ -122,7 +122,7 @@ class OptimizeFW(Firework):
             )
         )
         t.append(PassCalcLocs(name=name))
-        # t.append(VaspToDb(db_file=db_file, additional_fields={"task_label": name}))
+        t.append(VaspToDb(db_file=db_file, additional_fields={"task_label": name}))
         super(OptimizeFW, self).__init__(
             t,
             parents=parents,
@@ -433,7 +433,7 @@ class StaticFW(Firework):
 
         t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<"))
         t.append(PassCalcLocs(name=name))
-        t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
+        # t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
         super(StaticFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
 
 
