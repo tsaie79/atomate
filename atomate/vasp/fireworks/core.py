@@ -122,7 +122,7 @@ class OptimizeFW(Firework):
             )
         )
         t.append(PassCalcLocs(name=name))
-        t.append(VaspToDb(db_file=db_file, additional_fields={"task_label": name}))
+        # t.append(VaspToDb(db_file=db_file, additional_fields={"task_label": name}))
         super(OptimizeFW, self).__init__(
             t,
             parents=parents,
