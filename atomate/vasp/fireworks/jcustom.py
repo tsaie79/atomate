@@ -497,13 +497,20 @@ class JHSEStaticFW(Firework):
             # incar_hse_bs = MPHSEBSSet(structure).incar.as_dict()
             # for x in ['@module', '@class', "MAGMOM"]:
             #     incar_hse_bs.pop(x)
-            # t.append(
-            #     WriteVaspFromIOSet(
-            #         structure=structure,
-            #         vasp_input_set=vasp_input_set,
-            #         vasp_input_params={"user_incar_settings": incar_hse_bs}
-            #     )
-            # )
+            t.append(
+                WriteVaspFromIOSet(
+                    structure=structure,
+                    vasp_input_set=vasp_input_set,
+                    vasp_input_params={"user_incar_settings": {
+                        "EDIFF": 1E-5,
+                        "NSW": 0,
+                        "ISMEAR": 0,
+                        "SIGMA": 0.05,
+                        "ISYM": 3,
+                        "NELMIN": 5
+                    }}
+                )
+            )
         else:
             raise ValueError("Must specify structure or previous calculation")
 
@@ -512,15 +519,6 @@ class JHSEStaticFW(Firework):
         magmom = MPRelaxSet(structure).incar.get("MAGMOM", None)
         if magmom:
             t.append(ModifyIncar(incar_update={"MAGMOM": magmom}))
-
-        t.append(ModifyIncar(incar_update={
-            "EDIFF": 1E-5,
-            "NSW": 0,
-            "ISMEAR": 0,
-            "SIGMA": 0.05,
-            "ISYM": 3,
-            "NELMIN": 5
-        }))
 
         if vasp_input_set_params.get("user_incar_settings", {}):
             t.append(ModifyIncar(incar_update=vasp_input_set_params.get("user_incar_settings", {})))
