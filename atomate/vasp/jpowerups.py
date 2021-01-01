@@ -63,7 +63,8 @@ def scp_files(
             dest=os.path.join(root_path, proj_name, calc_name),
             server="localhost",
             user="jengyuantsai",
-            key_filename=os.path.expanduser(os.path.join(">>ssh_key<<", ".ssh", "id_rsa"))))
+            key_filename=">>ssh_key<<"
+        ))
 
     return original_wf
 
