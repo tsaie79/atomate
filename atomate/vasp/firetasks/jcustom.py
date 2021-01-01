@@ -1,10 +1,14 @@
 from fireworks import FiretaskBase, explicit_serialize
+
 from pymatgen.io.vasp.inputs import *
 from pymatgen.io.vasp.outputs import Chgcar
 from pymatgen.io.vasp.sets import MPStaticSet, MVLGWSet
+
 from atomate.common.firetasks.glue_tasks import get_calc_loc, PassResult, \
     CopyFiles, CopyFilesFromCalcLoc
 from atomate.vasp.database import VaspCalcDb
+from atomate.utils.utils import env_chk
+
 import shutil
 import gzip
 import os
@@ -214,6 +218,7 @@ class JFileTransferTask(FiretaskBase):
         max_retry = self.get('max_retry', 0)
         retry_delay = self.get('retry_delay', 10)
         mode = self.get('mode', 'move')
+        key_filename = env_chk(self.get('key_filename'), fw_spec)
 
         if mode == 'rtransfer':
             # remote transfers
@@ -221,7 +226,7 @@ class JFileTransferTask(FiretaskBase):
             import paramiko
             ssh = paramiko.SSHClient()
             ssh.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
-            ssh.connect(self['server'], username=self.get('user'), key_filename=self.get('key_filename'), port=12346)
+            ssh.connect(self['server'], username=self.get('user'), key_filename=key_filename, port=12346)
             sftp = ssh.open_sftp()
 
         for f in self["files"]:
