@@ -31,9 +31,7 @@ __email__ = "tsaie79@gmail.com"
 
 def scp_files(
         original_wf,
-        root_path,
-        proj_name,
-        calc_name,
+        dest,
         fw_name_constraint=None,
         task_name_constraint="RunVasp",
 ):
@@ -42,9 +40,7 @@ def scp_files(
 
     Args:
         original_wf (Workflow)
-        root_path (str): "/home/jengyuantsai/test_scp_fw/"
-        proj_name (str): "/home/jengyuantsai/test_scp_fw/defect_db/"
-        calc_name (str): "/home/jengyuantsai/test_scp_fw/defect_db/binary_vac_AB/"
+        dest (str): "/home/jengyuantsai/test_scp_fw/defect_db/binary_vac_AB/" (make sure every folder exists)
         fw_name_constraint (str): pattern for fireworks to clean up files after
         task_name_constraint (str): pattern for firetask to clean up files
 
@@ -60,7 +56,7 @@ def scp_files(
         original_wf.fws[idx_fw].tasks.insert(idx_t + 1, JFileTransferTask(
             mode="rtransfer",
             files=["all"],
-            dest=os.path.join(root_path, proj_name, calc_name),
+            dest=dest,
             server="localhost",
             user="jengyuantsai"
         ))
