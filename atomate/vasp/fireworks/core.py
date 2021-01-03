@@ -349,7 +349,7 @@ class ScanOptimizeFW(Firework):
         )
 
         # Parse the outputs into the database
-        t.append(VaspToDb(db_file=db_file, additional_fields={"task_label": name}))
+        # t.append(VaspToDb(db_file=db_file, additional_fields={"task_label": name}))
 
         # gzip the output
         t.append(GzipDir())
