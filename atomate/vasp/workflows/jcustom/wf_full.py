@@ -93,10 +93,14 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
                     "user_kpoints_settings": user_kpoints_settings
                 },
                 name="HSE_relax",
-                vasptodb_kwargs={"additional_fields": {
-                    "charge_state": cs,
-                    "nupdown_set": nupdown
-                }},
+                vasptodb_kwargs={
+                    "additional_fields": {
+                        "charge_state": cs,
+                        "nupdown_set": nupdown
+                    },
+                    "parse_dos": False,
+                    "parse_eigenvalues": False
+                },
                 parents=parents
             )
             return fw
