@@ -152,6 +152,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
         def hse_bs(parents, mode="line"):
             if mode == "uniform":
                 uis_hse_scf["user_incar_settings"].update({"ENMAX": 10, "ENMIN": -10, "NEDOS": 9000})
+
             fw = HSEBSFW(
                 structure=structure,
                 mode=mode,
