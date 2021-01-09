@@ -88,7 +88,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
             fw = JHSERelaxFW(
                 structure=structure,
                 force_gamma=gamma_mesh,
-                job_type="double_relaxation_run",
+                job_type="double_relaxation_ru",
                 vasp_input_set_params={
                     "user_incar_settings": user_incar_settings,
                     "user_kpoints_settings": user_kpoints_settings
