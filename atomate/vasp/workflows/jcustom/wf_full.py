@@ -88,6 +88,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
             fw = JHSERelaxFW(
                 structure=structure,
                 force_gamma=gamma_mesh,
+                job_type="double_relaxation_run",
                 vasp_input_set_params={
                     "user_incar_settings": user_incar_settings,
                     "user_kpoints_settings": user_kpoints_settings
@@ -117,6 +118,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
                 "ENCUT": encut,
                 "ISMEAR": 0,
                 "LCHARG": False,
+                "LWAVE": True,
                 "NSW": 0,
                 "NUPDOWN": nupdown,
                 "NELM": 150,
@@ -147,6 +149,14 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
             )
             return fw
 
+        def hse_bs(parents):
+            fw = NonSCFFW(
+                structure=structure,
+                mode="line",
+                input_set_overrides={"other_params": {"two_d_kpoints": True}},
+                parents=parents
+            )
+
         if task == "opt":
             fws.append(opt)
         elif task == "hse_relax":
@@ -160,6 +170,13 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
             fws.append(opt)
             fws.append(hse_relax(parents=fws[-1]))
             fws.append(hse_scf(parents=fws[-1]))
+        elif task == "hse_scf-hse_bs":
+            fws.append(hse_scf(parents=None))
+            fws.append(hse_bs(parents=fws[-1]))
+        elif task == "hse_relax-hse_scf-hse_bs":
+            fws.append(hse_relax(parents=None))
+            fws.append(hse_scf(parents=fws[-1]))
+            fws.append(hse_bs(parents=fws[-1]))
 
     wf_name = "{}:{}:q{}:sp{}".format("".join(structure.formula.split(" ")), wf_addition_name, charge_states, nupdowns)
 
