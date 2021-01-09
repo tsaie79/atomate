@@ -160,6 +160,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
                                                       "user_incar_settings":uis_hse_scf["user_incar_settings"],
                                                       "kpoints_line_density": 20
                                                       }},
+
                 parents=parents,
                 name="HSE_bs"
             )
