@@ -154,7 +154,8 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
                 structure=structure,
                 mode="line",
                 input_set_overrides={"other_params": {"two_d_kpoints": True}},
-                parents=parents
+                parents=parents,
+                name="HSE_bs"
             )
             return fw
 
