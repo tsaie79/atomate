@@ -156,7 +156,8 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
             fw = HSEBSFW(
                 structure=structure,
                 mode=mode,
-                input_set_overrides={"other_params": {"two_d_kpoints": True, "user_incar_settings":uis_hse_scf}},
+                input_set_overrides={"other_params": {"two_d_kpoints": True,
+                                                      "user_incar_settings":uis_hse_scf["user_incar_settings"]}},
                 parents=parents,
                 name="HSE_bs"
             )
