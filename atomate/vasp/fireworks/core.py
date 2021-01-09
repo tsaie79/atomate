@@ -511,6 +511,7 @@ class HSEBSFW(Firework):
         structure=None,
         mode="gap",
         name=None,
+        input_set_overrides=None,
         vasp_cmd=VASP_CMD,
         db_file=DB_FILE,
         **kwargs
@@ -548,7 +549,7 @@ class HSEBSFW(Firework):
         else:
             raise ValueError("Must specify a previous calculation for HSEBSFW")
 
-        t.append(WriteVaspHSEBSFromPrev(prev_calc_dir=".", mode=mode))
+        t.append(WriteVaspHSEBSFromPrev(prev_calc_dir=".", mode=mode, **input_set_overrides))
         t.append(RunVaspCustodian(vasp_cmd=vasp_cmd))
         t.append(PassCalcLocs(name=name))
 

@@ -410,6 +410,7 @@ class WriteVaspHSEBSFromPrev(FiretaskBase):
         "reciprocal_density",
         "kpoints_line_density",
         "potcar_spec",
+        "other_params"
     ]
 
     def run_task(self, fw_spec):
@@ -419,6 +420,7 @@ class WriteVaspHSEBSFromPrev(FiretaskBase):
             reciprocal_density=self.get("reciprocal_density", 50),
             kpoints_line_density=self.get("kpoints_line_density", 10),
             copy_chgcar=False,
+            **self.get("other_params", {})
         )
         potcar_spec = self.get("potcar_spec", False)
         vis.write_input(".", potcar_spec=potcar_spec)
