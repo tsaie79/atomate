@@ -127,12 +127,12 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
             "user_kpoints_settings": user_kpoints_settings
         }
 
-        if dos:
-            uis_hse_scf["user_incar_settings"].update({"ENMAX": 10, "ENMIN": -10, "NEDOS": 9000})
-
         uis_hse_scf["user_incar_settings"].update({"NELECT": nelect})
 
         def hse_scf(parents):
+            if dos:
+                uis_hse_scf["user_incar_settings"].update({"ENMAX": 10, "ENMIN": -10, "NEDOS": 9000})
+
             fw = JHSEStaticFW(
                 structure,
                 force_gamma=gamma_mesh,
@@ -149,11 +149,14 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
             )
             return fw
 
-        def hse_bs(parents):
+        def hse_bs(parents, mode="line"):
+            if mode == "uniform":
+                uis_hse_scf["user_incar_settings"].update({"ENMAX": 10, "ENMIN": -10, "NEDOS": 9000})
+
             fw = HSEBSFW(
                 structure=structure,
-                mode="line",
-                input_set_overrides={"other_params": {"two_d_kpoints": True}},
+                mode=mode,
+                input_set_overrides={"other_params": {"two_d_kpoints": True, "user_incar_settings":uis_hse_scf}},
                 parents=parents,
                 name="HSE_bs"
             )
