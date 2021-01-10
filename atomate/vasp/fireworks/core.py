@@ -561,7 +561,7 @@ class HSEBSFW(Firework):
                 db_file=db_file,
                 additional_fields={"task_label": name},
                 parse_dos=parse_dos,
-                bandstructure_mode=bandstructure_mode,
+                bandstructure_mode=bandstructure_mode
             )
         )
         super(HSEBSFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)

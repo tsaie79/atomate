@@ -130,9 +130,13 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
         uis_hse_scf["user_incar_settings"].update({"NELECT": nelect})
 
         def hse_scf(parents):
+            parse_dos = False
+            bandstructure_mode = False
             if dos:
                 uis_hse_scf["user_incar_settings"].update({"ENMAX": 10, "ENMIN": -10, "NEDOS": 9000})
-
+                parse_dos = True
+                bandstructure_mode = "uniform"
+                
             fw = JHSEStaticFW(
                 structure,
                 force_gamma=gamma_mesh,
@@ -144,7 +148,10 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
                         "task_type": "JHSEStaticFW",
                         "charge_state": cs,
                         "nupdown_set": nupdown
-                    }
+                    },
+                    "parse_dos": parse_dos,
+                    "parse_eigenvalues": True,
+                    "bandstructure_mode": bandstructure_mode
                 }
             )
             return fw
