@@ -11,7 +11,7 @@ from fireworks import Firework, LaunchPad, Workflow
 import numpy as np
 
 
-def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdowns, task, category,
+def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, nupdowns, task, category,
                     vasptodb=None, wf_addition_name=None):
 
     encut = 1.3*max([potcar.enmax for potcar in MPHSERelaxSet(structure).potcar])
@@ -132,11 +132,11 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, dos, nupdo
         def hse_scf(parents):
             parse_dos = False
             bandstructure_mode = False
-            if dos:
+            if scf_dos:
                 uis_hse_scf["user_incar_settings"].update({"ENMAX": 10, "ENMIN": -10, "NEDOS": 9000})
                 parse_dos = True
                 bandstructure_mode = "uniform"
-                
+
             fw = JHSEStaticFW(
                 structure,
                 force_gamma=gamma_mesh,
