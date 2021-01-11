@@ -115,7 +115,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
                 # "AMIX_MAG": 0.8,
                 # "BMIX": 0.0001,
                 # "BMIX_MAG": 0.0001,
-                "EDIFF": 1.0e-05,
+                "EDIFF": 1E-05,
                 "ENCUT": encut,
                 "ISMEAR": 0,
                 "LCHARG": False,
@@ -167,7 +167,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
                 input_set_overrides={"other_params": {"two_d_kpoints": True,
                                                       "user_incar_settings":uis_hse_scf["user_incar_settings"],
                                                       },
-                                     "kpoints_line_density": 20
+                                     # "kpoints_line_density": 20
                                      },
                 parents=parents,
                 name="HSE_bs"
@@ -194,6 +194,12 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
             fws.append(hse_relax(parents=None))
             fws.append(hse_scf(parents=fws[-1]))
             fws.append(hse_bs(parents=fws[-1]))
+        elif task == "opt-hse_relax-hse_scf-hse_bs":
+            fws.append(opt)
+            fws.append(hse_relax(parents=fws[-1]))
+            fws.append(hse_scf(parents=fws[-1]))
+            fws.append(hse_bs(parents=fws[-1]))
+
 
     wf_name = "{}:{}:q{}:sp{}".format("".join(structure.formula.split(" ")), wf_addition_name, charge_states, nupdowns)
 
