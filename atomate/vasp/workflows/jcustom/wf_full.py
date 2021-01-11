@@ -78,6 +78,10 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
             max_force_threshold=False,
             job_type="normal",
             force_gamma=gamma_mesh,
+            vasptodb_kwargs={
+                "parse_dos": False,
+                "parse_eigenvalues": False,
+            },
             override_default_vasp_params={
                 "user_incar_settings": user_incar_settings,
                 "user_kpoints_settings": user_kpoints_settings
