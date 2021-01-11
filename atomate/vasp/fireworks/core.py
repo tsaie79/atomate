@@ -508,6 +508,7 @@ class HSEBSFW(Firework):
         self,
         parents=None,
         prev_calc_dir=None,
+        cp_file_from_prev="CHGCAR",
         structure=None,
         mode="gap",
         name=None,
@@ -542,10 +543,10 @@ class HSEBSFW(Firework):
         t = []
         if prev_calc_dir:
             t.append(
-                CopyVaspOutputs(calc_dir=prev_calc_dir, additional_files=["CHGCAR"])
+                CopyVaspOutputs(calc_dir=prev_calc_dir, additional_files=[cp_file_from_prev])
             )
         elif parents:
-            t.append(CopyVaspOutputs(calc_loc=True, additional_files=["CHGCAR"]))
+            t.append(CopyVaspOutputs(calc_loc=True, additional_files=[cp_file_from_prev]))
         else:
             raise ValueError("Must specify a previous calculation for HSEBSFW")
 
