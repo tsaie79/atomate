@@ -34,7 +34,8 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
             "EDIFFG": -0.01,
             "LCHARG": False,
             "NUPDOWN": nupdown,
-            "SIGMA": 0.001
+            "SIGMA": 0.001,
+            "NSW": 150
             #"NCORE": 4 owls normal 14; cori 8. Reduce ncore if want to increase speed but low memory risk
         }
 
