@@ -169,6 +169,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
                                                       },
                                      # "kpoints_line_density": 20
                                      },
+                cp_file_from_prev="CHGCAR",
                 parents=parents,
                 name="HSE_bs"
             )
