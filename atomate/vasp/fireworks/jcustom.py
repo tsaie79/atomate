@@ -616,7 +616,7 @@ class JHSERelaxFW(Firework):
 
 class JHSEcDFTFW(Firework):
 
-    def __init__(self, up_occupation, down_occupation, nbands, prev_calc_dir=None, filesystem="jengyuantsai@localhost",
+    def __init__(self, up_occupation, down_occupation, nbands, prev_calc_dir=None, filesystem=None,
                  structure=None, specific_structure=None,
                  name="HSE_cDFT",
                  vasp_input_set_params=None, job_type="normal", max_force_threshold=None,
@@ -674,7 +674,7 @@ class JHSEcDFTFW(Firework):
         t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<",
                                   job_type=job_type, max_force_threshold=max_force_threshold))
         t.append(PassCalcLocs(name=name))
-        t.append(VaspToDb(db_file=db_file, bandstructure_mode="uniform", **vasptodb_kwargs))
+        t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
         super(JHSEcDFTFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
 
 
