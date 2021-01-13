@@ -63,7 +63,7 @@ class FileClient(object):
 
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        return ssh.connect(host, username=username, key_filename=private_key)
+        return ssh.connect(host, username=username, key_filename=private_key, port=12346)
 
     @staticmethod
     def exists(sftp, path):
