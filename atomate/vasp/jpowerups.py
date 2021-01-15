@@ -22,6 +22,8 @@ from fireworks import Workflow, FileWriteTask
 from fireworks.core.firework import Tracker
 from fireworks.utilities.fw_utilities import get_slug
 from pymatgen import Structure
+from pymatgen.io.vasp.sets import MPRelaxSet
+
 
 import os
 
@@ -76,7 +78,7 @@ def write_inputs_from_db(original_wf, db_file, task_id, modify_incar, write_chgc
                                                                            modify_incar=modify_incar))
     return original_wf
 
-def Jmodify_to_soc(
+def jmodify_to_soc(
             original_wf,
             nbands,
             saxis=[0,0,1],
