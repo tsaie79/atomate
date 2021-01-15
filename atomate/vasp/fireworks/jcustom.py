@@ -542,7 +542,7 @@ class JHSESOCFW(Firework):
             name="HSE_soc",
             saxis=(0, 0, 1),
             prev_calc_dir=None,
-            vasp_cmd=VASP_CMD,
+            vasp_cmd=">>vasp_ncl<<",
             copy_vasp_outputs=True,
             db_file=None,
             parents=None,
