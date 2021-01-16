@@ -26,7 +26,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
         if structure.site_properties.get("magmom", None):
             structure.remove_site_property("magmom")
         structure.set_charge(cs)
-        nelect = MPRelaxSet(structure, use_structure_charge=True).nelect
+        nelect = MPHSERelaxSet(structure, use_structure_charge=True).nelect
         user_incar_settings = {
             "ENCUT": encut,
             "ISIF": 2,
