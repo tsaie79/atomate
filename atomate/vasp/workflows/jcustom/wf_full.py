@@ -177,6 +177,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
                 name="HSE_soc",
                 saxis=(0, 0, 1),
                 parents=parents,
+                vasp_input_set_params=uis_hse_scf,
                 vasptodb_kwargs={
                     "additional_fields": {
                         "task_type": "JHSESOCFW",

@@ -544,6 +544,7 @@ class JHSESOCFW(Firework):
             prev_calc_dir=None,
             vasp_cmd=">>vasp_ncl<<",
             copy_vasp_outputs=True,
+            vasp_input_set_params = None,
             db_file=None,
             parents=None,
             vasptodb_kwargs=None,
@@ -567,6 +568,9 @@ class JHSESOCFW(Firework):
         fw_name = "{}-{}".format(
             structure.composition.reduced_formula if structure else "unknown", name
         )
+
+        vasp_input_set_params = vasp_input_set_params or {}
+
         vasptodb_kwargs = vasptodb_kwargs or {}
         if "additional_fields" not in vasptodb_kwargs:
             vasptodb_kwargs["additional_fields"] = {}
