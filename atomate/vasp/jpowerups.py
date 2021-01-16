@@ -157,3 +157,21 @@ def jmodify_to_soc(
         original_wf.fws[idx_fw].name += "_soc"
 
     return original_wf
+
+def clear_to_db(original_wf, fw_name_constraint=None):
+    """
+    Simple powerup that clears the VaspToDb to a workflow.
+    Args:
+        original_wf (Workflow): The original workflow.
+        fw_name_constraint (str): name constraint for fireworks to
+            have their modification tasks removed
+    """
+    idx_list = get_fws_and_tasks(
+        original_wf,
+        fw_name_constraint=fw_name_constraint,
+        task_name_constraint="VaspToDb",
+    )
+    idx_list.reverse()
+    for idx_fw, idx_t in idx_list:
+        original_wf.fws[idx_fw].tasks.pop(idx_t)
+    return original_wf

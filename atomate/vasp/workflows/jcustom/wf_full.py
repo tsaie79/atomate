@@ -174,7 +174,6 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
 
             fw = JHSESOCFW(
                 structure=structure,
-                magmom=None,
                 name="HSE_soc",
                 saxis=(0, 0, 1),
                 parents=parents,
