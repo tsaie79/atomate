@@ -988,7 +988,7 @@ class SOCFW(Firework):
             t.append(
                 CopyVaspOutputs(
                     calc_dir=prev_calc_dir,
-                    additional_files=["CHGCAR"],
+                    additional_files=["CHGCAR", "WAVECAR"],
                     contcar_to_poscar=True,
                 )
             )
