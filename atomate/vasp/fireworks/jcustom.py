@@ -609,6 +609,12 @@ class JHSESOCFW(Firework):
                 ModifyIncar({"incar_dictmod": {"_unset":{"LAECHG":1, "KPOINT_BSE":1}}})
             ]
         )
+        if vasp_input_set_params.get("user_incar_settings", {}):
+            t.append(ModifyIncar(incar_update=vasp_input_set_params.get("user_incar_settings", {})))
+
+        if vasp_input_set_params.get("user_kpoints_settings", {}):
+            t.append(WriteVaspFromPMGObjects(kpoints=vasp_input_set_params.get("user_kpoints_settings", {})))
+
         t.extend(
             [
                 RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<"),
