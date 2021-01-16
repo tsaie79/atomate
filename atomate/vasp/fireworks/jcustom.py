@@ -606,7 +606,7 @@ class JHSESOCFW(Firework):
 
         t.extend(
             [
-                ModifyIncar({"incar_dictmod": {"_unset":{"LAECHG":1, " KPOINT_BSE":1}}})
+                ModifyIncar({"incar_dictmod": {"_unset":{"LAECHG":1, "KPOINT_BSE":1}}})
             ]
         )
         t.extend(
