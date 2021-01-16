@@ -524,7 +524,7 @@ class WriteVaspSOCFromPrev(FiretaskBase):
             magmom=self["magmom"],
             saxis=self["saxis"],
             copy_chgcar=self.get("copy_chgcar", False),
-            nbands_factor=self.get("nbands_factor", 1.2),
+            nbands_factor=self.get("nbands_factor", 2),
             reciprocal_density=self.get("reciprocal_density", 100),
             small_gap_multiply=self.get("small_gap_multiply", None),
             standardize=self.get("standardize", False),

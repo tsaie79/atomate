@@ -585,7 +585,7 @@ class JHSESOCFW(Firework):
                 )
             )
             t.append(
-                WriteVaspSOCFromPrev(prev_calc_dir=".", magmom=magmom, saxis=saxis, nbands_factor=2)
+                WriteVaspSOCFromPrev(prev_calc_dir=".", magmom=magmom, saxis=saxis)
             )
         elif parents and copy_vasp_outputs:
             t.append(
@@ -594,10 +594,10 @@ class JHSESOCFW(Firework):
                 )
             )
             t.append(
-                WriteVaspSOCFromPrev(prev_calc_dir=".", magmom=magmom, saxis=saxis, nbands_factor=2)
+                WriteVaspSOCFromPrev(prev_calc_dir=".", magmom=magmom, saxis=saxis)
             )
         elif structure:
-            vasp_input_set = MPSOCSet(structure)
+            vasp_input_set = MPSOCSet(structure, nbands_factor=2)
             t.append(
                 WriteVaspFromIOSet(structure=structure, vasp_input_set=vasp_input_set)
             )
