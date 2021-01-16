@@ -616,7 +616,7 @@ class JHSESOCFW(Firework):
                 # VaspToDb(db_file=db_file, **vasptodb_kwargs),
             ]
         )
-        super(SOCFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
+        super(JHSESOCFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
 
 class JHSERelaxFW(Firework):
     def __init__(
