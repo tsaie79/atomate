@@ -531,7 +531,7 @@ class JHSEStaticFW(Firework):
         
         t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<"))
         t.append(PassCalcLocs(name=name))
-        # t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
+        t.append(VaspToDb(db_file=db_file, **vasptodb_kwargs))
         super(JHSEStaticFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
 
 class JHSESOCFW(Firework):
@@ -613,7 +613,7 @@ class JHSESOCFW(Firework):
             [
                 RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<"),
                 PassCalcLocs(name=name),
-                # VaspToDb(db_file=db_file, **vasptodb_kwargs),
+                VaspToDb(db_file=db_file, **vasptodb_kwargs),
             ]
         )
         super(JHSESOCFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
