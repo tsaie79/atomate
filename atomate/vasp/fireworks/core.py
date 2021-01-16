@@ -957,7 +957,7 @@ class SOCFW(Firework):
         name="spin-orbit coupling",
         saxis=(0, 0, 1),
         prev_calc_dir=None,
-        vasp_cmd="vasp_ncl",
+        vasp_cmd=">>vasp_ncl<<",
         copy_vasp_outputs=True,
         db_file=None,
         parents=None,
