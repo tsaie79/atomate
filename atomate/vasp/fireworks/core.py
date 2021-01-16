@@ -1016,7 +1016,7 @@ class SOCFW(Firework):
             [
                 RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<"),
                 PassCalcLocs(name=name),
-                # VaspToDb(db_file=db_file, additional_fields={"task_label": name}),
+                VaspToDb(db_file=db_file, additional_fields={"task_label": name}),
             ]
         )
         super(SOCFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
