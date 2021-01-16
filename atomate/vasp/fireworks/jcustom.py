@@ -613,7 +613,7 @@ class JHSESOCFW(Firework):
             [
                 RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<"),
                 PassCalcLocs(name=name),
-                VaspToDb(db_file=db_file, **vasptodb_kwargs),
+                # VaspToDb(db_file=db_file, **vasptodb_kwargs),
             ]
         )
         super(SOCFW, self).__init__(t, parents=parents, name=fw_name, **kwargs)
