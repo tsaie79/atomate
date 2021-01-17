@@ -134,7 +134,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
 
         uis_hse_scf["user_incar_settings"].update({"NELECT": nelect})
 
-        def hse_scf(parents, soc=False):
+        def hse_scf(parents, soc=False, prev_calc_dir=None):
             parse_dos = False
             bandstructure_mode = False
             if scf_dos:
@@ -143,12 +143,13 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
                 bandstructure_mode = "uniform"
 
             if soc:
-                uis_hse_scf.update({"LWAVE":False, "LCHARG":True})
+                uis_hse_scf.update({"LWAVE":True, "LCHARG":True})
 
             fw = JHSEStaticFW(
                 structure,
                 force_gamma=gamma_mesh,
                 vasp_input_set_params=uis_hse_scf,
+                prev_calc_dir=prev_calc_dir,
                 parents=parents,
                 name="HSE_scf",
                 vasptodb_kwargs={
@@ -164,7 +165,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
             )
             return fw
 
-        def hse_soc(parents):
+        def hse_soc(parents, prev_calc_dir=None):
             parse_dos = False
             bandstructure_mode = False
             if scf_dos:
@@ -173,7 +174,10 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
                 bandstructure_mode = "uniform"
 
             fw = JHSESOCFW(
+                prev_calc_dir=None,
                 structure=structure,
+                read_chgcar=True,
+                read_wavecar=True,
                 name="HSE_soc",
                 saxis=(0, 0, 1),
                 parents=parents,
@@ -192,7 +196,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
             return fw
 
 
-        def hse_bs(parents, mode="line"):
+        def hse_bs(parents, mode="line", prev_calc_dir=None):
             if mode == "uniform":
                 uis_hse_scf["user_incar_settings"].update({"ENMAX": 10, "ENMIN": -10, "NEDOS": 9000})
 
@@ -205,6 +209,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
                                      # "kpoints_line_density": 20
                                      },
                 cp_file_from_prev="CHGCAR",
+                prev_calc_dir=prev_calc_dir,
                 parents=parents,
                 name="HSE_bs"
             )
@@ -215,14 +220,16 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
         elif task == "hse_relax":
             fws.append(hse_relax(parents=None))
         elif task == "hse_scf":
-            fws.append(hse_scf(parents=None))
+            fws.append(hse_scf(parents=None, prev_calc_dir=None))
+        elif task == "hse_bs":
+            fws.append(hse_bs(parents=None, prev_calc_dir=None, mode="line"))
         elif task == "hse_soc":
-            fws.append(hse_soc(parents=None))
+            fws.append(hse_soc(parents=None, prev_calc_dir=None))
         elif task == "hse_scf-hse_bs":
             fws.append(hse_scf(parents=None))
             fws.append(hse_bs(parents=fws[-1]))
         elif task == "hse_scf-hse_soc":
-            fws.append(hse_scf(parents=None))
+            fws.append(hse_scf(parents=None, soc=True))
             fws.append(hse_soc(parents=fws[-1]))
         elif task == "hse_relax-hse_scf":
             fws.append(hse_relax(parents=None))
