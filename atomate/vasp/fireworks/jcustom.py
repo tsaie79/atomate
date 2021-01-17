@@ -764,15 +764,19 @@ class JHSEcDFTFW(Firework):
         if selective_dynamics:
             t.append(SelectiveDynmaicPoscar(selective_dynamics=selective_dynamics, nsites=len(structure.sites)))
 
-        t.append(ModifyIncar(incar_update={
+        vis_cdft = {
             "ISMEAR": -2,
-            "FERWE": up_occupation,
-            "FERDO": down_occupation,
             "NBANDS": nbands,
             "LDIAG": False,
             "LSUBROT": False,
             "ALGO": "All"
-        }))
+        }
+        if up_occupation:
+            vis_cdft.update({"FERWE": up_occupation})
+        if down_occupation:
+            vis_cdft.update({"FERDO": down_occupation})
+
+        t.append(ModifyIncar(incar_update=vis_cdft))
 
         t.append(RunVaspCustodian(vasp_cmd=vasp_cmd, auto_npar=">>auto_npar<<",
                                   job_type=job_type, max_force_threshold=max_force_threshold))
