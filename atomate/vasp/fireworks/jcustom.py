@@ -613,6 +613,8 @@ class JHSESOCFW(Firework):
                 structure.remove_site_property("magmom")
             except KeyError:
                 pass
+            structure.add_site_property("magmom",magmom)
+
             vasp_input_set = MPSOCSet(structure, nbands_factor=2)
             t.append(
                 WriteVaspFromIOSet(structure=structure, vasp_input_set=vasp_input_set)
