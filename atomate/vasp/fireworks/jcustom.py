@@ -537,6 +537,8 @@ class JHSEStaticFW(Firework):
 class JHSESOCFW(Firework):
     def __init__(
             self,
+            read_chgcar=False,
+            read_wavecar=True,
             magmom=None,
             structure=None,
             name="HSE_soc",
@@ -579,12 +581,18 @@ class JHSESOCFW(Firework):
         if not magmom:
             magmom = [[0,0,mag_z] for mag_z in MPRelaxSet(structure).incar.get("MAGMOM", None)]
 
+        copy_add_files_from_prev = []
+        if read_chgcar:
+           copy_add_files_from_prev.append("CHGCAR")
+        if read_wavecar:
+            copy_add_files_from_prev.append("WAVECAR")
+
         t = []
         if prev_calc_dir:
             t.append(
                 CopyVaspOutputs(
                     calc_dir=prev_calc_dir,
-                    additional_files=["CHGCAR", "WAVECAR"],
+                    additional_files=copy_add_files_from_prev,
                     contcar_to_poscar=True,
                 )
             )
@@ -594,13 +602,17 @@ class JHSESOCFW(Firework):
         elif parents and copy_vasp_outputs:
             t.append(
                 CopyVaspOutputs(
-                    calc_loc=True, additional_files=["CHGCAR"], contcar_to_poscar=True
+                    calc_loc=True, additional_files=copy_add_files_from_prev, contcar_to_poscar=True
                 )
             )
             t.append(
                 WriteVaspSOCFromPrev(prev_calc_dir=".", magmom=magmom, saxis=saxis)
             )
         elif structure:
+            try:
+                structure.remove_site_property("magmom")
+            except KeyError:
+                pass
             vasp_input_set = MPSOCSet(structure, nbands_factor=2)
             t.append(
                 WriteVaspFromIOSet(structure=structure, vasp_input_set=vasp_input_set)

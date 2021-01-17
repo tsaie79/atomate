@@ -387,3 +387,4 @@ def get_wf_full_scan(structure, charge_states, gamma_only, gamma_mesh, dos, nupd
     wf = add_namefile(wf)
     wf = add_modify_incar(wf)
     return wf
+
