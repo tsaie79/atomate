@@ -12,13 +12,14 @@ import numpy as np
 
 
 def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, nupdowns, task, category,
-                    vasptodb=None, wf_addition_name=None):
+                    vasptodb=None, wf_addition_name=None, task_arg=None):
 
     encut = 1.3*max([potcar.enmax for potcar in MPHSERelaxSet(structure).potcar])
 
     print("SET ENCUT:{}".format(encut))
 
     vasptodb = vasptodb or {}
+    task_arg = task_arg or {}
 
     fws = []
     for cs, nupdown in zip(charge_states, nupdowns):
@@ -220,14 +221,14 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
         elif task == "hse_relax":
             fws.append(hse_relax(parents=None))
         elif task == "hse_scf":
-            fws.append(hse_scf(parents=None, prev_calc_dir=None))
+            fws.append(hse_scf(parents=None, **task_arg))
         elif task == "hse_bs":
-            fws.append(hse_bs(parents=None, prev_calc_dir=None, mode="line"))
+            fws.append(hse_bs(parents=None, **task_arg))
         elif task == "hse_soc":
-            fws.append(hse_soc(parents=None, prev_calc_dir=None))
+            fws.append(hse_soc(parents=None, **task_arg))
         elif task == "hse_scf-hse_bs":
             fws.append(hse_scf(parents=None))
-            fws.append(hse_bs(parents=fws[-1]))
+            fws.append(hse_bs(parents=fws[-1], **task_arg))
         elif task == "hse_scf-hse_soc":
             fws.append(hse_scf(parents=None, soc=True))
             fws.append(hse_soc(parents=fws[-1]))
@@ -241,12 +242,16 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
         elif task == "hse_relax-hse_scf-hse_bs":
             fws.append(hse_relax(parents=None))
             fws.append(hse_scf(parents=fws[-1]))
-            fws.append(hse_bs(parents=fws[-1]))
+            fws.append(hse_bs(parents=fws[-1], **task_arg))
+        elif task == "hse_relax-hse_scf-hse_soc":
+            fws.append(hse_relax(parents=None))
+            fws.append(hse_scf(parents=fws[-1], soc=True))
+            fws.append(hse_soc(parents=fws[-1]))
         elif task == "opt-hse_relax-hse_scf-hse_bs":
             fws.append(opt)
             fws.append(hse_relax(parents=fws[-1]))
             fws.append(hse_scf(parents=fws[-1]))
-            fws.append(hse_bs(parents=fws[-1]))
+            fws.append(hse_bs(parents=fws[-1], **task_arg))
 
 
     wf_name = "{}:{}:q{}:sp{}".format("".join(structure.formula.split(" ")), wf_addition_name, charge_states, nupdowns)
