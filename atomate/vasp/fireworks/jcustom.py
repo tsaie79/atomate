@@ -547,7 +547,7 @@ class JHSESOCFW(Firework):
             vasp_cmd=">>vasp_ncl<<",
             copy_vasp_outputs=True,
             vasp_input_set_params = None,
-            db_file=None,
+            db_file=DB_FILE,
             parents=None,
             vasptodb_kwargs=None,
             **kwargs
