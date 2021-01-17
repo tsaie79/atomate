@@ -537,8 +537,8 @@ class JHSEStaticFW(Firework):
 class JHSESOCFW(Firework):
     def __init__(
             self,
-            read_chgcar=False,
-            read_wavecar=True,
+            read_chgcar=True,
+            read_wavecar=False,
             magmom=None,
             structure=None,
             name="HSE_soc",
@@ -620,11 +620,7 @@ class JHSESOCFW(Firework):
         else:
             raise ValueError("Must specify structure or previous calculation.")
 
-        t.extend(
-            [
-                ModifyIncar({"incar_dictmod": {"_unset":{"LAECHG":1, "KPOINT_BSE":1}}})
-            ]
-        )
+
         if vasp_input_set_params.get("user_incar_settings", {}):
             t.append(ModifyIncar(incar_update=vasp_input_set_params.get("user_incar_settings", {})))
 
