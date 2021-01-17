@@ -144,7 +144,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
                 bandstructure_mode = "uniform"
 
             if soc:
-                uis_hse_scf.update({"LWAVE":True, "LCHARG":True})
+                uis_hse_scf["user_incar_settings"].update({"LWAVE":True, "LCHARG":True})
 
             fw = JHSEStaticFW(
                 structure,
@@ -230,7 +230,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
             fws.append(hse_scf(parents=None))
             fws.append(hse_bs(parents=fws[-1], **task_arg))
         elif task == "hse_scf-hse_soc":
-            fws.append(hse_scf(parents=None, soc=True))
+            fws.append(hse_scf(parents=None, soc=True, **task_arg))
             fws.append(hse_soc(parents=fws[-1]))
         elif task == "hse_relax-hse_scf":
             fws.append(hse_relax(parents=None))
