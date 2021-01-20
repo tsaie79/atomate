@@ -186,6 +186,6 @@ def write_PMGObjects(original_wf, pmg_objs, fw_name_constraint=None):
 
     for idx_fw, idx_t in idx_list:
         original_wf.fws[idx_fw].tasks.insert(
-            idx_t, WriteVaspFromPMGObjects(**pmg_objs)
+            idx_t, WriteVaspFromPMGObjects.f(**pmg_objs)
         )
     return original_wf

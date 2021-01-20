@@ -158,9 +158,9 @@ class WriteVaspFromPMGObjects(FiretaskBase):
 
     def run_task(self, fw_spec):
         if "incar" in self:
-            self["incar"].write_file("INCAR")
+            self.get("incar").write_file("INCAR")
         if "poscar" in self:
-            self["poscar"].write_file("POSCAR")
+            self.get("poscar").write_file("POSCAR")
         if "kpoints" in self:
             self["kpoints"].write_file("KPOINTS")
         if "potcar" in self:
