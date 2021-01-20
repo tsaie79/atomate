@@ -17,7 +17,7 @@ from atomate.vasp.firetasks.run_calc import (
     RunVaspDirect,
     RunNoVasp,
 )
-from atomate.vasp.firetasks.write_inputs import ModifyIncar, ModifyPotcar, ModifyKpoints
+from atomate.vasp.firetasks.write_inputs import ModifyIncar, ModifyPotcar, ModifyKpoints, WriteVaspFromPMGObjects
 from fireworks import Workflow, FileWriteTask
 from fireworks.core.firework import Tracker
 from fireworks.utilities.fw_utilities import get_slug
@@ -174,4 +174,18 @@ def clear_to_db(original_wf, fw_name_constraint=None):
     idx_list.reverse()
     for idx_fw, idx_t in idx_list:
         original_wf.fws[idx_fw].tasks.pop(idx_t)
+    return original_wf
+
+def write_PMGObjects(original_wf, pmg_objs, fw_name_constraint=None):
+
+    idx_list = get_fws_and_tasks(
+        original_wf,
+        fw_name_constraint=fw_name_constraint,
+        task_name_constraint="RunVasp",
+    )
+
+    for idx_fw, idx_t in idx_list:
+        original_wf.fws[idx_fw].tasks.insert(
+            idx_t, WriteVaspFromPMGObjects(**pmg_objs)
+        )
     return original_wf
