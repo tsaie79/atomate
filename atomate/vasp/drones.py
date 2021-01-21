@@ -393,8 +393,8 @@ class VaspDrone(AbstractDrone):
             eigenvalues = self.process_eigenvalues(vrun)
             if eigenvalues:
                 d["output"].update({"eigenvalues": eigenvalues})
-            proj_eigen = self.process_projected_eigenvalues(vrun)
-            if proj_eigen:
+            projected_eigenvalues = self.process_projected_eigenvalues(vrun)
+            if projected_eigenvalues:
                 d["output"].update({"projected_eigenvalues": projected_eigenvalues})
 
     # Parse electronic information if possible.
