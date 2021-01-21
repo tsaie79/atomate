@@ -119,9 +119,9 @@ class VaspToDb(FiretaskBase):
         else:
             mmdb = VaspCalcDb.from_db_file(db_file, admin=True)
             t_id = mmdb.insert_task(
-                task_doc, use_gridfs=self.get("parse_dos", False)
+                task_doc, use_gridfs=bool(self.get("parse_dos", False))
                 or bool(self.get("bandstructure_mode", False))
-                or self.get("parse_eigenvalues", False)
+                or bool(self.get("parse_eigenvalues", False))
                 or self.get("parse_chgcar", False)  # deprecated
                 or self.get("parse_aeccar", False)  # deprecated
                 or bool(self.get("store_volumetric_data", STORE_VOLUMETRIC_DATA)))
