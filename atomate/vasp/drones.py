@@ -391,10 +391,11 @@ class VaspDrone(AbstractDrone):
 
         if self.parse_eigenvalues != False:
             eigenvalues = self.process_eigenvalues(vrun)
-            d["output"]["eigenvalues"] = eigenvalues
-
+            if eigenvalues:
+                d["output"].update({"eigenvalues": eigenvalues})
             proj_eigen = self.process_projected_eigenvalues(vrun)
-            d["output"]["projected_eigenvalues"] = projected_eigenvalues
+            if proj_eigen:
+                d["output"].update({"projected_eigenvalues": projected_eigenvalues})
 
     # Parse electronic information if possible.
         # For certain optimizers this is broken and we don't get an efermi resulting in the bandstructure
