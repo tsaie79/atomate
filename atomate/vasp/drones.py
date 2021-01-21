@@ -503,14 +503,14 @@ class VaspDrone(AbstractDrone):
     def process_eigenvalues(self, vrun):
         if self.parse_eigenvalues == True or (str(self.parse_eigenvalues).lower() == "auto" and vrun.incar.get("NSW", 0) < 1):
             try:
-                return vrun.eigenvalues
+                return vrun.as_dict()["output"]["eigenvalues"]
             except:
                 raise ValueError("No valid eigenvalue data exist")
 
     def process_projected_eigenvalues(self, vrun):
         if self.parse_eigenvalues == True or (str(self.parse_eigenvalues).lower() == "auto" and vrun.incar.get("NSW", 0) < 1):
             try:
-                return vrun.projected_eigenvalues
+                return vrun.as_dict()["output"]["projected_eigenvalues"]
             except:
                 raise ValueError("No valid projected_eigenvalues data exist")
 
