@@ -360,10 +360,10 @@ class VaspDrone(AbstractDrone):
                      "composition_unit_cell": "unit_cell_formula"}.items():
             d[k] = d.pop(v)
             
-        if not self.parse_eigenvalues:
-            for k in ["eigenvalues", "projected_eigenvalues"]:  # large storage space breaks some docs
-                if k in d["output"]:
-                    del d["output"][k]
+
+        for k in ["eigenvalues", "projected_eigenvalues"]:  # large storage space breaks some docs
+            if k in d["output"]:
+                del d["output"][k]
 
         comp = Composition(d["composition_unit_cell"])
         d["formula_anonymous"] = comp.anonymized_formula
@@ -389,7 +389,14 @@ class VaspDrone(AbstractDrone):
             if dos:
                 d["dos"] = dos
 
-        # Parse electronic information if possible.
+        if self.parse_eigenvalues != False:
+            eigenvalues = self.process_eigenvalues(vrun)
+            d["output"]["eigenvalues"] = eigenvalues
+
+            proj_eigen = self.process_projected_eigenvalues(vrun)
+            d["output"]["projected_eigenvalues"] = projected_eigenvalues
+
+    # Parse electronic information if possible.
         # For certain optimizers this is broken and we don't get an efermi resulting in the bandstructure
         try:
             bs = vrun.get_band_structure()
@@ -491,6 +498,20 @@ class VaspDrone(AbstractDrone):
                 return vrun.complete_dos.as_dict()
             except:
                 raise ValueError("No valid dos data exist")
+
+    def process_eigenvalues(self, vrun):
+        if self.parse_eigenvalues == True or (str(self.parse_eigenvalues).lower() == "auto" and vrun.incar.get("NSW", 0) < 1):
+            try:
+                return vrun.eigenvalues
+            except:
+                raise ValueError("No valid eigenvalue data exist")
+
+    def process_projected_eigenvalues(self, vrun):
+        if self.parse_eigenvalues == True or (str(self.parse_eigenvalues).lower() == "auto" and vrun.incar.get("NSW", 0) < 1):
+            try:
+                return vrun.projected_eigenvalues
+            except:
+                raise ValueError("No valid projected_eigenvalues data exist")
 
     def process_raw_data(self, dir_name, taskname="standard"):
         """
