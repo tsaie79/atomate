@@ -176,7 +176,6 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
                 bandstructure_mode = "uniform"
 
             fw = JHSESOCFW(
-                vasp_cmd=GAMMA_VASP_CMD,
                 prev_calc_dir=prev_calc_dir,
                 structure=structure,
                 read_chgcar=True,
