@@ -594,6 +594,7 @@ class JHSESOCFW(Firework):
                     calc_dir=prev_calc_dir,
                     additional_files=copy_add_files_from_prev,
                     contcar_to_poscar=True,
+                    filesystem="jengyuantsai@localhost"
                 )
             )
             t.append(
