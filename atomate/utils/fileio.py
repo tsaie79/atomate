@@ -36,7 +36,9 @@ class FileClient(object):
             else:
                 username = None  # paramiko sets default username
                 host = filesystem
+            print(host, username)
             self.ssh = FileClient.get_ssh_connection(username, host, private_key)
+            print(type(self.ssh))
             self.sftp = self.ssh.open_sftp()
 
     @staticmethod
