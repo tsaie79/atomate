@@ -5,6 +5,7 @@ from atomate.vasp.fireworks.core import OptimizeFW, StaticFW, ScanOptimizeFW, HS
 from atomate.vasp.fireworks.jcustom import *
 from atomate.vasp.powerups import use_fake_vasp, add_namefile, add_additional_fields_to_taskdocs, preserve_fworker, \
     add_modify_incar, add_modify_kpoints, set_queue_options, set_execution_options
+from atomate.vasp.config import GAMMA_VASP_CMD
 
 from fireworks import Firework, LaunchPad, Workflow
 
@@ -175,6 +176,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
                 bandstructure_mode = "uniform"
 
             fw = JHSESOCFW(
+                vasp_cmd=GAMMA_VASP_CMD,
                 prev_calc_dir=prev_calc_dir,
                 structure=structure,
                 read_chgcar=True,
