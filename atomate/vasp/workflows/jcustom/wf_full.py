@@ -190,7 +190,7 @@ def get_wf_full_hse(structure, charge_states, gamma_only, gamma_mesh, scf_dos, n
                         "nupdown_set": nupdown
                     },
                     "parse_dos": parse_dos,
-                    "parse_eigenvalues": False,
+                    "parse_eigenvalues": True,
                     "bandstructure_mode": bandstructure_mode
                 }
             )
