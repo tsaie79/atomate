@@ -37,7 +37,6 @@ class FileClient(object):
                 username = None  # paramiko sets default username
                 host = filesystem
             self.ssh = FileClient.get_ssh_connection(username, host, private_key)
-            self.ssh.load_host_keys(os.path.expanduser("~/.ssh/known_hosts"))
             self.sftp = self.ssh.open_sftp()
 
     @staticmethod
@@ -62,6 +61,7 @@ class FileClient(object):
             raise ValueError("Cannot locate private key file: {}".format(private_key))
 
         ssh = paramiko.SSHClient()
+        ssh.load_host_keys(os.path.expanduser("~/.ssh/known_hosts"))
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         return ssh.connect(host, username=username, key_filename=private_key, port=12347)
 
