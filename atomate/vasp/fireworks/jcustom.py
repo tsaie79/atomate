@@ -593,7 +593,8 @@ class JHSESOCFW(Firework):
                 CopyVaspOutputs(
                     calc_dir=prev_calc_dir,
                     additional_files=copy_add_files_from_prev,
-                    contcar_to_poscar=True
+                    contcar_to_poscar=True,
+                    filesystem="tug03990@localhost"
                 )
             )
             t.append(
