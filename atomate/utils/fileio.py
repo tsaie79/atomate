@@ -61,7 +61,7 @@ class FileClient(object):
             raise ValueError("Cannot locate private key file: {}".format(private_key))
 
         ssh = paramiko.SSHClient()
-        ssh.load_host_keys(os.path.expanduser("~/.ssh/known_hosts"))
+        ssh.load_system_host_keys()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         return ssh.connect(host, username=username, key_filename=private_key, port=12347)
 
