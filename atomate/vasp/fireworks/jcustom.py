@@ -486,7 +486,7 @@ class JHSEStaticFW(Firework):
         fw_name = "{}-{}".format(structure.composition.reduced_formula if structure else "unknown", name)
 
         if prev_calc_dir:
-            t.append(CopyVaspOutputs(calc_dir=prev_calc_dir, contcar_to_poscar=True, additional_files=["WAVECAR"]))
+            t.append(CopyVaspOutputs(calc_dir=prev_calc_dir, contcar_to_poscar=True, additional_files=["WAVECAR"], filesystem="tug03990@localhost"))
             t.append(WriteVaspHSEBSFromPrev(mode="uniform", reciprocal_density=None, kpoints_line_density=None))
         elif parents:
             if prev_calc_loc:
@@ -593,8 +593,7 @@ class JHSESOCFW(Firework):
                 CopyVaspOutputs(
                     calc_dir=prev_calc_dir,
                     additional_files=copy_add_files_from_prev,
-                    contcar_to_poscar=True,
-                    filesystem="tug03990@localhost"
+                    contcar_to_poscar=True
                 )
             )
             t.append(
