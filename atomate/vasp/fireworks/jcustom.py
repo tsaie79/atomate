@@ -490,7 +490,7 @@ class JHSEStaticFW(Firework):
             t.append(WriteVaspHSEBSFromPrev(mode="uniform", reciprocal_density=None, kpoints_line_density=None))
         elif parents:
             if prev_calc_loc:
-                t.append(CopyVaspOutputs(calc_loc=prev_calc_loc, contcar_to_poscar=True))
+                t.append(CopyVaspOutputs(calc_loc=prev_calc_loc, contcar_to_poscar=True, additional_files=["CHGCAR"]))
             t.append(WriteVaspHSEBSFromPrev(mode="uniform", reciprocal_density=None, kpoints_line_density=None))
         elif structure:
             vasp_input_set = vasp_input_set or "MPHSERelaxSet"
