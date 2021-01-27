@@ -225,7 +225,8 @@ class JFileTransferTask(FiretaskBase):
             # Create SFTP connection
             import paramiko
             ssh = paramiko.SSHClient()
-            ssh.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
+            # ssh.load_host_keys(os.path.expanduser(os.path.join("~", ".ssh", "known_hosts")))
+            ssh.load_system_host_keys()
             ssh.connect(self['server'], username=self.get('user'),
                         key_filename=os.path.expanduser(os.path.join("~", ".ssh", "id_rsa")), port=12346)
             sftp = ssh.open_sftp()
