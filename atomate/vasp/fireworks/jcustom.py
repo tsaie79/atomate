@@ -742,8 +742,12 @@ class JHSEcDFTFW(Firework):
                 t.append(WriteVaspFromPMGObjects(poscar=specific_structure))
             t.append(RmSelectiveDynPoscar())
         elif parents:
+            if prev_calc_dir:
+                # used in soc when CHGCAR from nosocSCF is neeeded
+                t.append(CopyVaspOutputs(calc_dir=prev_calc_dir, additional_files=["CHGCAR"], contcar_to_poscar=True))
             if prev_calc_loc:
-                t.append(CopyVaspOutputs(calc_loc=prev_calc_loc, additional_files=["WAVECAR"], contcar_to_poscar=True))
+                t.append(CopyVaspOutputs(calc_loc=prev_calc_loc, contcar_to_poscar=True))
+
             t.append(WriteVaspHSEBSFromPrev(mode="uniform", reciprocal_density=None, kpoints_line_density=None))
             t.append(RmSelectiveDynPoscar())
         else:
