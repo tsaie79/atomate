@@ -156,6 +156,15 @@ def jmodify_to_soc(
     for idx_fw, idx_t in run_boltztrap_list:
         original_wf.fws[idx_fw].name += "_soc"
 
+    # revise task_label to xxx_soc in db
+    to_db_list = get_fws_and_tasks(
+        original_wf,
+        fw_name_constraint=fw_name_constraint,
+        task_name_constraint="VaspToDb",
+    )
+    for idx_fw, idx_t in to_db_list:
+        original_wf.fws[idx_fw].tasks[idx_t]["additional_fields"].update({"task_label": original_wf.fws[idx_fw].name})
+
     return original_wf
 
 def clear_to_db(original_wf, fw_name_constraint=None):
