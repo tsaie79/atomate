@@ -486,15 +486,15 @@ class JHSEStaticFW(Firework):
         fw_name = "{}-{}".format(structure.composition.reduced_formula if structure else "unknown", name)
 
         if prev_calc_dir:
-            t.append(CopyVaspOutputs(calc_dir=prev_calc_dir, contcar_to_poscar=True, additional_files=["WAVECAR"]))
+            if not parents:
+                t.append(CopyVaspOutputs(calc_dir=prev_calc_dir, contcar_to_poscar=True, additional_files=["WAVECAR"]))
+            else:
+                # used in soc when CHGCAR from nosocSCF is neeeded
+                t.append(CopyFiles(from_dir=prev_calc_dir, files_to_copy=["CHGCAR.gz", "CHGCAR"], continue_on_missing=True))
             t.append(WriteVaspHSEBSFromPrev(mode="uniform", reciprocal_density=None, kpoints_line_density=None))
         elif parents:
             if prev_calc_loc:
                 t.append(CopyVaspOutputs(calc_loc=prev_calc_loc, contcar_to_poscar=True))
-                if prev_calc_dir:
-                    # used in soc when CHGCAR from nosocSCF is neeeded
-                    t.append(CopyFiles(from_dir=prev_calc_dir, files_to_copy=["CHGCAR.gz", "CHGCAR"], continue_on_missing=True))
-
             t.append(WriteVaspHSEBSFromPrev(mode="uniform", reciprocal_density=None, kpoints_line_density=None))
         elif structure:
             vasp_input_set = vasp_input_set or "MPHSERelaxSet"
