@@ -498,9 +498,10 @@ class WriteVaspSOCFromPrev(FiretaskBase):
 
     """
 
-    required_params = ["magmom", "saxis"]
+    required_params = ["saxis"]
 
     optional_params = [
+        "magmom",
         "prev_calc_dir",
         "copy_chgcar",
         "nbands_factor",
@@ -521,7 +522,7 @@ class WriteVaspSOCFromPrev(FiretaskBase):
 
         vis = MPSOCSet.from_prev_calc(
             prev_calc_dir=self.get("prev_calc_dir", "."),
-            magmom=self["magmom"],
+            magmom=self.get("magmom", None),
             saxis=self["saxis"],
             copy_chgcar=self.get("copy_chgcar", False),
             nbands_factor=self.get("nbands_factor", 2),

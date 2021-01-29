@@ -451,9 +451,9 @@ class JScanStaticFW(Firework):
 
         t.append(RmSelectiveDynPoscar())
 
-        magmom = MPRelaxSet(structure).incar.get("MAGMOM", None)
-        if magmom:
-            t.append(ModifyIncar(incar_update={"MAGMOM": magmom}))
+        # magmom = MPRelaxSet(structure).incar.get("MAGMOM", None)
+        # if magmom:
+        #     t.append(ModifyIncar(incar_update={"MAGMOM": magmom}))
 
         t.append(ModifyIncar(incar_update={"EDIFF": 1E-5}))
 
@@ -522,9 +522,9 @@ class JHSEStaticFW(Firework):
 
         t.append(RmSelectiveDynPoscar())
 
-        magmom = MPRelaxSet(structure).incar.get("MAGMOM", None)
-        if magmom:
-            t.append(ModifyIncar(incar_update={"MAGMOM": magmom}))
+        # magmom = MPRelaxSet(structure).incar.get("MAGMOM", None)
+        # if magmom:
+        #     t.append(ModifyIncar(incar_update={"MAGMOM": magmom}))
 
         if vasp_input_set_params.get("user_incar_settings", {}):
             t.append(ModifyIncar(incar_update=vasp_input_set_params.get("user_incar_settings", {})))
@@ -603,7 +603,7 @@ class JHSESOCFW(Firework):
                 )
             )
             t.append(
-                WriteVaspSOCFromPrev(prev_calc_dir=".", magmom=magmom, saxis=saxis)
+                WriteVaspSOCFromPrev(prev_calc_dir=".", saxis=saxis)
             )
         elif parents and copy_vasp_outputs:
             t.append(
@@ -612,7 +612,7 @@ class JHSESOCFW(Firework):
                 )
             )
             t.append(
-                WriteVaspSOCFromPrev(prev_calc_dir=".", magmom=magmom, saxis=saxis)
+                WriteVaspSOCFromPrev(prev_calc_dir=".", saxis=saxis)
             )
         elif structure:
             try:
@@ -756,9 +756,9 @@ class JHSEcDFTFW(Firework):
         else:
             raise ValueError("Must specify previous calculation or parent")
 
-        magmom = MPRelaxSet(structure).incar.get("MAGMOM", None)
-        if magmom:
-            t.append(ModifyIncar(incar_update={"MAGMOM": magmom}))
+        # magmom = MPRelaxSet(structure).incar.get("MAGMOM", None)
+        # if magmom:
+        #     t.append(ModifyIncar(incar_update={"MAGMOM": magmom}))
 
         if vasp_input_set_params.get("user_incar_settings", {}):
             t.append(ModifyIncar(incar_update=vasp_input_set_params.get("user_incar_settings", {})))
