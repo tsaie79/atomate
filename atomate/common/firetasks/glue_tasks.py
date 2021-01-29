@@ -394,6 +394,7 @@ class CopyFiles(FiretaskBase):
             exclude_files=self.get("exclude_files", []),
             suffix=self.get("suffix", None),
             fw_spec=fw_spec,
+            continue_on_missing=self.get("continue_on_missing", False)
         )
         self.copy_files()
 
