@@ -78,16 +78,6 @@ def write_inputs_from_db(original_wf, db_file, task_id, modify_incar, write_chgc
                                                                            modify_incar=modify_incar))
     return original_wf
 
-def write_input_from_PMGObjects(original_wf, pmg_obj, fw_name_constraint=None):
-    idx_list = get_fws_and_tasks(
-        original_wf,
-        fw_name_constraint=fw_name_constraint,
-        task_name_constraint="RunVasp",
-    )
-    for idx_fw, idx_t in idx_list:
-        original_wf.fws[idx_fw].tasks.insert(idx_t - 1, WriteVaspFromPMGObjects(pmg_obj))
-    return original_wf
-
 def jmodify_to_soc(
             original_wf,
             nbands,
